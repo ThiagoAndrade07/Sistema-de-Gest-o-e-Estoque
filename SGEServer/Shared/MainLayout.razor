@@ -1,0 +1,662 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin AuthStateProvider
+@inject Acesso _Login
+@inject ClientesController _Clientes
+@inject AuthenticationLogin authStateProvider
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<style>
+    .logo-image {
+        height: 50px;
+        width: auto;
+        padding-bottom: 5px;
+    }
+
+    .mud-layout-root {
+        background: linear-gradient(180deg, rgba(6,56,98,1) 0%, rgba(6,56,98,1) 30%, rgba(12,100,90,1) 91%, rgba(16,130,85,1) 100%);
+        min-height: 100vh;
+    }
+    /* controla a expansao do mudDrawer, se apagar essa classe ele fica fixo  */
+    .mud-drawer.mud-drawer-responsive.mud-drawer-pos-left{
+        width:auto;
+    }
+
+    .text-franquia {
+        white-space: nowrap;
+    }
+
+    .center-vertically-horizontally {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .pt-16, .py-16 {
+        padding-top: 0px !important;
+    }
+
+    .mb-16, .my-16 {
+        margin-bottom: 0px !important;
+    }
+
+    #span-clientes {
+        color: #2196f3;
+        font-weight: normal;
+    }
+
+    #span-produtos {
+        color: #ff9800;
+        font-weight:normal;
+    }
+
+    #span-estoque {
+        color: #1EC8A5;
+        font-weight: normal;
+    }
+    #span-cotacao {
+        color: #00c853;
+        font-weight:normal;
+    }
+    #span-ordem-compra {
+        color:#594ae2;
+    }
+    #span-empresas-prazo {
+        color: #767676;
+        font-weight:normal;
+    }
+    #span-filtros {
+        color: #f44336;
+        font-weight:normal;
+    }
+
+    
+
+    /* fazendo alinhamento do icone com o texto do menu lateral */
+    .mud-nav-link, .mud-nav-link-text {
+        display: flex;
+        align-items: center;
+    }
+
+    /* transição do icone de seta */
+    .icon-expansion-more {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .rotate-180 {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* espaçamento manual do icone de seta do texto */
+   
+
+    .title-clientes {
+        margin-right: 83px;
+    }
+    .title-clientes-pesquisa {
+        margin-right:67px;
+    }
+    .title-produtos {
+        margin-right: 76px;
+    }
+
+    .title-estoque {
+        margin-right: 81px;
+    }
+
+    .title-cotacao {
+        margin-right: 83px;
+    }
+
+    .title-filtros {
+        margin-right: 22px;
+    }
+
+    .title-filtros-historico{
+        margin-right: 15px;
+    }
+    /* style das img de icone */
+    .icon-img {
+        margin-right: 20px;
+        width: 35px;
+    }
+
+    /* style da div do if nos menu com seleçao */
+    .container-icon {
+        padding-left: 15px;
+    }
+
+    /* Estilo adicional para garantir que o contêiner pai tenha posição relativa */
+    .position-relative {
+        position: relative;
+    }
+
+    /* Exibe o contêiner quando isExpandedProfile é true */
+    .profile-expansion-container {
+        position: absolute;
+        top: 65px;
+        right: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 100;
+        width: 100%;
+        max-width: 200px;
+        padding: 30px 20px;
+        background-color: #2c2c2c;
+    }
+
+    .mud-app-bar {
+        border-bottom: 1px solid #FFF;
+    }
+
+    .mud-drawer-custom, .mud-app-bar {
+        background-color: #011E36;
+    }
+
+    .custom-label-color .mud-input-label {
+        color: #FFFFFF !important;
+    }
+
+    .img-perfil {
+        border-radius: 30px;
+    }
+
+</style>
+
+@if (isAuthenticated)
+{
+    <MudLayout Class="mud-layout-root">
+        <MudAppBar Class="mud-app-bar" Elevation="0">
+            <MudGrid Container Class="center-vertically-horizontally">
+                <MudItem xs="4" Class="d-flex justify-start align-items-center">
+                    @if (logoBase64 != null)
+                    {
+                        <img src="@logoBase64" class="logo-image" alt="Logo da Empresa" style="max-width: 100px; max-height: 100px;" />
+                    }
+                </MudItem>
+                <MudItem xs="4" Class="d-flex justify-center align-items-center">
+                    <MudText Typo="Typo.h6" Class="text-franquia" Style="text-transform:uppercase;">@Usr.Empresa</MudText>
+                </MudItem>
+                <MudItem xs="4" Class="d-flex justify-end align-items-center position-relative">
+                    <MudItem Class="d-flex align-center">
+                        <h3 style="text-transform:uppercase;">@Usr.Nome</h3>
+                        <MudImage Src="" Alt="Logo Perfil" Elevation="25" Width="50" Height="50" Class="rounded-lg ml-6 img-perfil" @onclick="ToggleExpansionProfile" />
+                    </MudItem>
+                    <div style="@(isExpandedProfile ? "" : "display: none;")">
+                        <MudPaper Class="d-flex justify-center align-center profile-expansion-container">
+                            <MudItem xs="12">
+                                <MudButton Color="Color.Error" OnClick="BtnSair" FullWidth="true" Variant="Variant.Filled">Sair</MudButton>
+                            </MudItem>
+                        </MudPaper>
+                    </div>
+                    
+                </MudItem>
+
+            </MudGrid>
+        </MudAppBar>
+        <MudDrawer Class="mud-drawer-custom" @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
+            <MudNavMenu Class="mud-width-full">
+
+                @* %%%%%%%%%%%%%%%%%%%%%%%%%%% CRIAÇÃO DINÂMICA DOS ACESSOS DO USUÁRIO %%%%%%%%%%%%%%%%%%%%%%%%%%%*@
+
+                @* @foreach (var modulo in ListModulos)
+            {
+            <MudNavLink Style="width: 100%" Class="d-flex justify-space-between" @onclick="@(() => ToggleExpansion(modulo))">
+            <MudGrid Class="d-flex justify-space-between align-center">
+            <MudItem Class="d-flex justify-start align-center" xs="10">
+            <img src="@modulo.Icone" class="icon-img" />
+            <span id="@modulo.CssId">@modulo.Descricao</span>
+            </MudItem>
+            <MudItem Class="d-flex justify-end align-center" xs="2">
+            <MudIcon Class="@(modulo.IsExpanded ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="@modulo.CssId" />
+            </MudItem>
+            </MudGrid>
+            </MudNavLink>
+
+            @if (modulo.IsExpanded)
+            {
+            @foreach (var tela in ListTelas)
+            {
+            if (tela.PaginaPai == modulo.Id)
+            {
+            <div class="container-icon">
+            <MudNavLink OnClick="@(() => ButtonRedirecionar(tela))">
+            <img src="@tela.Icone" class="icon-img" />
+            <span id="@modulo.CssId">@tela.Descricao</span>
+            </MudNavLink>
+            </div>
+            }
+            }
+            }
+            } *@
+
+                @* %%%%%%%%%%%%%%%%%%%%%%%%%%% CRIAÇÃO DINÂMICA DOS ACESSOS DO USUÁRIO %%%%%%%%%%%%%%%%%%%%%%%%%%%*@
+
+
+                @* ---------------------------------------------- LINKS FIXOS *@
+
+                @* ---------------------------- DASHBOARD ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" OnClick="BtnDashboard">
+                    <img src="Img/icon-dashboard.svg" class="icon-img" />
+                    <span id="span-clientes">Dashboard</span>
+                </MudNavLink>
+                @* ---------------------------- CLIENTES ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionClientes">
+                    <img src="Img/Clientes-icon.svg" class="icon-img" />
+                    <span id="span-clientes" class="title-clientes">Clientes</span>
+                    <MudIcon Class="@(isExpandedClientes ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-clientes" />
+                </MudNavLink>
+                @if (isExpandedClientes)
+                {
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnCadastroClientes">
+                            <img src="Img/icon-cadastro-clientes.svg" class="icon-img" />
+                            <span id="span-clientes">Cadastro de Clientes</span>
+                        </MudNavLink>
+                        <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionPesquisaClientes">
+                            <img src="Img/icon-pesquisa-cliente.svg" class="icon-img" />
+                            <span id="span-clientes" class="title-clientes-pesquisa">Pesquisa de Clientes</span>
+                            <MudIcon Class="@(isExpandedPesquisaClientes ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-clientes" />
+                        </MudNavLink>
+                        @if (isExpandedPesquisaClientes)
+                        {
+                            <div class="container-icon">
+                                <MudNavLink OnClick="BtnPessoaJuridica">
+                                    <img src="Img/icon-pessoa-juridica.svg" class="icon-img"/>
+                                    <span id="span-clientes">Pessoa Jurídica</span>
+                                </MudNavLink>
+                                <MudNavLink OnClick="BtnPessoaFisica">
+                                    <img src="Img/icon-pessoa-fisica.svg" class="icon-img"/>
+                                    <span id="span-clientes">Pessoa Física</span>
+                                </MudNavLink>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @* ---------------------------- PRODUTOS ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionProdutos">
+                    <img src="Img/icon-produto.svg" class="icon-img" />
+                    <span id="span-produtos" class="title-produtos">Produtos</span>
+                    <MudIcon Class="@(isExpandedProdutos ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-produtos" />
+                </MudNavLink>
+                @if (isExpandedProdutos)
+                {
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnCadastroProdutos">
+                            <img src="/Img/icon-cadastro-produto.svg" class="icon-img" />
+                            <span id="span-produtos">Cadastro de Produtos</span>
+                        </MudNavLink>
+                        <MudNavLink OnClick="BtnProdutosCadastrados">
+                            <img src="Img/icon-pesquisa-produtos.svg" class="icon-img" />
+                            <span id="span-produtos">Produtos Cadastrados</span>
+                        </MudNavLink>
+                    </div>
+                }
+
+                @* ---------------------------- ESTOQUE ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionEstoque">
+                    <img src="iMG/icon-estoque.svg" class="icon-img" />
+                    <span id="span-estoque" class="title-estoque">Estoque</span>
+                    <MudIcon Class="@(isExpandedEstoque ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-estoque" />
+                </MudNavLink>
+                @if (isExpandedEstoque)
+                {
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnEstoque">
+                            <img src="Img/icon-pesquisa-estoque.svg" class="icon-img" />
+                            <span id="span-estoque">Pesquisa Estoque</span>
+                        </MudNavLink>
+                    </div>
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnEntrada">
+                            <img src="Img/icon-entrada.svg" class="icon-img" />
+                            <span id="span-estoque">Entrada</span>
+                        </MudNavLink>
+                    </div>
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnSaida">
+                            <img src="Img/icon-saida.svg" class="icon-img" />
+                            <span id="span-estoque">Saída</span>
+                        </MudNavLink>
+                    </div>
+                }
+                @* ---------------------------- COTACAO ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionCotacao">
+                    <img src="Img/icon-cotacao.svg" class="icon-img" />
+                    <span id="span-cotacao" class="title-cotacao">Cotação</span>
+                    <MudIcon Class="@(isExpandedCotacao ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-cotacao" />
+                </MudNavLink>
+                @if (isExpandedCotacao)
+                {
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnMontarCotacao">
+                            <img src="Img/icon-montar-otacao.svg" class="icon-img" />
+                            <span id="span-cotacao">Montar Cotação</span>
+                        </MudNavLink>
+                    </div>
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnEditarCotacao">
+                            <img src="Img/icon-editar-cotacao.svg" class="icon-img" />
+                            <span id="span-cotacao">Editar Cotação</span>
+                        </MudNavLink>
+                    </div>
+                }
+                @* ---------------------------- ORDEM COMPRA ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" OnClick="BtnOrdemCompra">
+                    <img src="Img/icon-ordem.svg" class="icon-img" />
+                    <span id="span-ordem-compra">Ordens de Compra</span>
+                </MudNavLink>
+                @* ---------------------------- ENTREGAS PENDENTE ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" OnClick="BtnEntregasPendente">
+                    <img src="Img/icon-entrega.svg" class="icon-img" />
+                    <span id="span-produtos">Entregas Pendente</span>
+                </MudNavLink>
+                @* ---------------------------- DADOS EMPRESA ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" OnClick="BtnDadosEmpresa">
+                    <img src="Img/icon-dados-empresa.svg" class="icon-img" />
+                    <span id="span-estoque">Dados Empresa</span>
+                </MudNavLink>
+                @* ---------------------------- EMPRESAS A PRAZO ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" OnClick="BtnEmpresasAPrazo">
+                    <img src="Img/icon-empresa-prazo.svg" class="icon-img" />
+                    <span id="span-empresas-prazo">Empresas a Prazo</span>
+                </MudNavLink>
+                @* ---------------------------- FILTROS E RELATORIOS ------------------------------------ *@
+                <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionFiltros">
+                    <img src="Img/icon-filtros.svg" class="icon-img" />
+                    <span id="span-filtros" class="title-filtros">Filtros/Relatórios</span>
+                    <MudIcon Class="@(isExpandedFiltros ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-filtros" />
+                </MudNavLink>
+                @if (isExpandedFiltros)
+                {
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnCotacoesSalvas">
+                            <img src="Img/icon-cotacao-salva.svg" class="icon-img" />
+                            <span id="span-filtros">Cotações Salvas</span>
+                        </MudNavLink>
+                    </div>
+                    <div class="container-icon">
+                        <MudNavLink Class="custom-nav-link justify-space-between" @onclick="ToggleExpansionHistoricoMovimentacao">
+                            <img src="Img/icon-historico-de-movimentacoes.svg" class="icon-img" />
+                            <span id="span-filtros" class="title-filtros-historico">Historico de Movimentações</span>
+                            <MudIcon Class="@(isExpandedHistoricoMovimentacao ? "icon-expansion-more rotate-180" : "icon-expansion-more")" Icon="@Icons.Material.Filled.ExpandMore" id="span-filtros" />
+                        </MudNavLink>
+                            @if (isExpandedHistoricoMovimentacao)
+                            {
+                                <div class="container-icon">
+                                    <MudNavLink OnClick="BtnHistoricoEntrada">
+                                        <img src="Img/icon-historico-entrada.svg" class="icon-img" />
+                                        <span id="span-filtros">Entrada</span>
+                                    </MudNavLink>
+                                </div>
+                                <div class="container-icon">
+                                    <MudNavLink OnClick="BtnHistoricoSaida">
+                                        <img src="Img/icon-historico-saida.svg" class="icon-img" />
+                                        <span id="span-filtros">Saida</span>
+                                    </MudNavLink>
+                                </div>
+                            }
+                    </div>
+                    <div class="container-icon">
+                        <MudNavLink OnClick="BtnOrdensFinalizadas">
+                            <img src="Img/icon-ordens-finalizadas.svg" class="icon-img" />
+                            <span id="span-filtros">Ordens de Compra Finalizadas</span>
+                        </MudNavLink>
+                    </div>
+                }
+            </MudNavMenu>
+
+        </MudDrawer>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+                <CascadingValue Value="@Usr">
+                    @Body
+                </CascadingValue>
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+}
+
+@code {
+    bool _drawerOpen = true;
+    private bool isAuthenticated = false;
+
+    private LoginModel Usr = new();
+    // private List<ModuloModel> ListModulos = new List<ModuloModel>();
+    // private List<TelaModel> ListTelas = new List<TelaModel>();
+
+
+    private bool isExpandedClientes = false;
+    private bool isExpandedProdutos = false;
+    private bool isExpandedProfile = false;
+    private bool isExpandedEstoque = false;
+    private bool isExpandedCotacao = false;
+    private bool isExpandedFiltros = false;
+    private bool isExpandedHistoricoMovimentacao = false;
+    private bool isExpandedPesquisaClientes = false;
+    private string logoBase64;
+    private string ProfileClasses => "d-flex justify-end align-items-center position-relative" + (isExpandedProfile ? " is-expanded-profile" : "");
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(AuthStateProvider, Usr, Navigation);
+
+                // ListModulos = _Login.CarregarModulosUsuario(Usr.CodUsuario);
+                // ListTelas = _Login.CarregarTelasUsuario(Usr.CodUsuario);
+                var logoBytes = _Clientes.PuxaLogoEmpresa(Usr.CodEmpresa);
+                logoBase64 = ConverterBytesParaBase64(logoBytes);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private string ConverterBytesParaBase64(byte[] bytes)
+    {
+        string base64 = Convert.ToBase64String(bytes);
+        string formato = DeterminarFormatoImagem(bytes);
+        string mimeType = formato switch
+        {
+            "png" => "image/png",
+            "svg" => "image/svg+xml",
+            "jpeg" => "image/jpeg",
+            _ => "application/octet-stream", // Default caso não identifique
+        };
+        return $"data:{mimeType};base64,{base64}";
+    }
+
+    private string DeterminarFormatoImagem(byte[] bytes)
+    {
+        // Assinaturas de formatos de imagem comuns
+        var assinaturas = new Dictionary<string, byte[]>
+    {
+        { "png", new byte[] { 0x89, 0x50, 0x4E, 0x47 } }, // PNG: 89 50 4E 47
+        { "jpeg", new byte[] { 0xFF, 0xD8, 0xFF } }, // JPEG: FF D8 FF
+        // SVG não tem uma assinatura simples nos bytes iniciais. Seria necessário analisar o texto.
+    };
+
+        foreach (var formato in assinaturas)
+        {
+            if (bytes.Take(formato.Value.Length).SequenceEqual(formato.Value))
+            {
+                return formato.Key;
+            }
+        }
+
+        // Verificação adicional para SVG, que pode começar com um espaço em branco ou tags XML
+        var svgSignature = "<svg";
+        var encoding = new System.Text.UTF8Encoding();
+        var byteOrderMark = encoding.GetPreamble();
+        var possibleHeaderLength = Math.Min(bytes.Length, byteOrderMark.Length + 100); // Checar os primeiros 100 bytes para a tag SVG
+        var headerBytes = new byte[possibleHeaderLength];
+        Array.Copy(bytes, headerBytes, possibleHeaderLength);
+        var headerString = encoding.GetString(headerBytes);
+
+        if (headerString.Contains(svgSignature, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return "svg";
+        }
+
+        return "desconhecido"; // Retorna desconhecido se não for possível determinar o formato
+    }
+
+    // private void ToggleExpansion(ModuloModel modulo)
+    // {
+    //     modulo.IsExpanded = !modulo.IsExpanded;
+    // }
+
+    // private void ButtonRedirecionar(TelaModel tela)
+    // {
+    //     Navigation.NavigateTo($"/{tela.Rota}");
+    // }
+
+
+    private void BtnSair()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+
+
+    // --------------------- CÓDIGO FIXO
+
+
+    private void ToggleExpansionClientes()
+    {
+        isExpandedClientes = !isExpandedClientes;
+    }
+    private void ToggleExpansionProdutos()
+    {
+        isExpandedProdutos = !isExpandedProdutos;
+    }
+    private void ToggleExpansionEstoque()
+    {
+        isExpandedEstoque = !isExpandedEstoque;
+    }
+    private void ToggleExpansionProfile()
+    {
+        isExpandedProfile = !isExpandedProfile;
+    }
+    private void ToggleExpansionCotacao()
+    {
+        isExpandedCotacao = !isExpandedCotacao;
+    }
+    private void ToggleExpansionPesquisaClientes()
+    {
+        isExpandedPesquisaClientes = !isExpandedPesquisaClientes;
+    }
+    private void ToggleExpansionFiltros()
+    {
+        isExpandedFiltros = !isExpandedFiltros;
+    }
+    private void ToggleExpansionHistoricoMovimentacao()
+    {
+        isExpandedHistoricoMovimentacao = !isExpandedHistoricoMovimentacao;
+    }
+    private async void TelaLogin()
+    {
+        await authStateProvider.Logout();
+        Navigation.NavigateTo("/");
+    }
+    private void BtnCadastroClientes()
+    {
+        Navigation.NavigateTo("/cadastrodeclientes");
+    }
+    private void BtnPesquisaClientes()
+    {
+        Navigation.NavigateTo("/pesquisaclientes");
+    }
+    private void BtnCadastroProdutos()
+    {
+        Navigation.NavigateTo("/cadastroprodutos");
+    }
+    private void BtnProdutosCadastrados()
+    {
+        Navigation.NavigateTo("/produtoscadastrados");
+    }
+    private void BtnEstoque()
+    {
+        Navigation.NavigateTo("/pesquisaestoque");
+    }
+    private void BtnMontarCotacao()
+    {
+        Navigation.NavigateTo("/cotacao");
+    }
+    private void BtnEditarCotacao()
+    {
+        Navigation.NavigateTo("/editarcotacao");
+    }
+    private void BtnEntrada()
+    {
+        Navigation.NavigateTo("/entrada");
+    }
+    private void BtnSaida()
+    {
+        Navigation.NavigateTo("/saida");
+    }
+    private void BtnOrdemCompra()
+    {
+        Navigation.NavigateTo("/ordemdecompra");
+    }
+    private void BtnEntregasPendente()
+    {
+        Navigation.NavigateTo("/entregaspendentes");
+    }
+    private void BtnDadosEmpresa()
+    {
+        Navigation.NavigateTo("/dadosempresa");
+    }
+    private void BtnEmpresasAPrazo()
+    {
+        Navigation.NavigateTo("/empresasprazo");
+    }
+    private void BtnFiltrosRelatorios()
+    {
+        Navigation.NavigateTo("/filtrorelatorioindex");
+    }
+    private void BtnPessoaJuridica()
+    {
+        Navigation.NavigateTo("/pessoajuridicacadastrada");
+    }
+    private void BtnPessoaFisica()
+    {
+        Navigation.NavigateTo("/pessoafisicacadastrada");
+    }
+    private void BtnCotacoesSalvas()
+    {
+        Navigation.NavigateTo("/cotacoessalvas");
+    }
+    private void BtnOrdensFinalizadas()
+    {
+        Navigation.NavigateTo("/ordenscomprafinalizadas");
+    }
+    private void BtnHistoricoEntrada()
+    {
+        Navigation.NavigateTo("/entradamovimentacoes");
+    }
+    private void BtnHistoricoSaida()
+    {
+        Navigation.NavigateTo("/saidamovimentacoes");
+    }
+    private void BtnDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+}

@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationLogin authStateProvider
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <CascadingValue Value="authStateProvider">
+        @Body
+    </CascadingValue>
+</MudLayout>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await authStateProvider.ValidaSessao();
+        }
+    }
+}

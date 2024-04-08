@@ -1,0 +1,50 @@
+﻿@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@layout NoLayout
+
+@if (isAuthenticated)
+{
+    <div class="h-100 d-flex justify-content-center">
+        <div style="width: 400px; margin-top: 4rem;">
+
+            <MudAlert Variant="Variant.Text"
+                      Severity="Severity.Warning"
+                      ShowCloseIcon="false">
+                Erro 404
+            </MudAlert>
+            <MudAlert Variant="Variant.Text"
+                      Severity="Severity.Info"
+                      NoIcon="true"
+                      ShowCloseIcon="false">
+                O menu selecionado não foi localizado.
+            </MudAlert>
+
+
+            <MudText Typo="Typo.body2" Align="Align.Center">
+
+            </MudText>
+
+        </div>
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+}
