@@ -1,0 +1,20 @@
+﻿@page "/dashboard"
+
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@layout MainLayout
+
+<MudItem xs="12" Class="d-flex justify-end">
+    <MudFab OnClick="ConfigCores" StartIcon="@Icons.Material.Filled.Settings" Color="Color.Warning" Label="Configurações do Sistema" />
+</MudItem>
+
+
+
+@code {
+
+
+    private void ConfigCores()
+    {
+        Navigation.NavigateTo("/configuracoes");
+    }
+}

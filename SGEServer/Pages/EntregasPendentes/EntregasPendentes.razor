@@ -1,0 +1,201 @@
+﻿@page "/entregaspendentes"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject CotacaoController _Cotacao
+@inject IDialogService DialogService
+@layout MainLayout
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 10px 0 40px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    <h2>Entregas Pendentes</h2>
+    <MudGrid Class="paper-style">
+        <MudGrid Class="pa-7">
+                <MudItem xs="12">
+                    <MudText Class="sub-text">Filtros</MudText>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField OnKeyUp="OnClickPesquisar" Immediate="true" @bind-Value="NumCotacao" Variant="Variant.Text" T="string" Label="N.º Cotação" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField OnKeyUp="OnClickPesquisar" Immediate="true" @bind-Value="OrdemCompra" Variant="Variant.Text" T="string" Label="N.º Ordem Compra" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField OnKeyUp="OnClickPesquisar" Immediate="true" @bind-Value="NomeFantasia" Variant="Variant.Text" T="string" Label="Nome Fantasia" />
+                </MudItem>
+        </MudGrid>
+        
+
+        <MudItem xs="12">
+            <MudTable Items="listCotacoes" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Breakpoint="Breakpoint.None">
+                <ToolBarContent>
+                    <MudText Style="font-weight: 700;">@listCotacoes.Count() Entregas Encontradas</MudText>
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width: 240px;" />
+                        <col style="width: 240px;" />
+                    <col />
+                    <col style="width: 120px;" />
+                    <col style="width: 120px;" />
+                    <col style="width: 60px;" />
+                    <col style="width: 60px;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>N.º Cotação</MudTh>
+                    <MudTh>N.º Ordem Com</MudTh>
+                    <MudTh>Nome Fantasia</MudTh>
+                    <MudTh>Cnpj</MudTh>
+                    <MudTh>Valor</MudTh>
+                    <MudTh></MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="N.º Cotação">@context.NumCotacao</MudTd>
+                        <MudTd DataLabel="N.º Ordem Compra">@context.OrdemCompra</MudTd>
+                        <MudTd DataLabel="Nome Fantasia">@context.NomeFantasia</MudTd>
+                        <MudTd DataLabel="Cnpj">@context.Cnpj</MudTd>
+                        <MudTd DataLabel="Valor">R$ @context.ValorTotal.ToString("F2")</MudTd>
+                        <MudTd>
+                            <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Search" OnClick="@(() => BtnVerMais(context))" />
+                        </MudTd>
+                        <MudTd>
+                            <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.DeleteForever" OnClick="@(() => BtnRemover(context))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                    </PagerContent>
+                    <NoRecordsContent>
+                        <MudText Color="Color.Error">Nenhuma entrega pendente foi encontrada :\</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Carregando...</MudText>
+                    </LoadingContent>
+                </MudTable>
+            </MudItem>
+
+            <MudItem Class="d-flex justify-start align-center" xs="4">
+                <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                    Voltar
+                </MudButton>
+            </MudItem>
+            <MudItem xs="8"></MudItem>
+
+
+        </MudGrid>
+
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<CotacaoModel> listCotacoes = new List<CotacaoModel>();
+
+    private LoginModel Usr = new();
+
+    private string NumCotacao = string.Empty;
+    private string NomeFantasia = string.Empty;
+    private string OrdemCompra = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+                listCotacoes = _Cotacao.ListarCotacoesPendentes(Usr.CodEmpresa, NumCotacao, NomeFantasia, OrdemCompra);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    // -------- BTN VOLTAR ----------
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    private void BtnVerMais(CotacaoModel cotacao)
+    {
+        Navigation.NavigateTo($"/entregaspendentes/infocotacao/{cotacao.CodCotacao}/{cotacao.NumCotacao}");
+    }
+
+    private void OnClickPesquisar()
+    {
+        listCotacoes = _Cotacao.ListarCotacoesPendentes(Usr.CodEmpresa, NumCotacao, NomeFantasia, OrdemCompra);
+    }
+
+    private async void BtnRemover(CotacaoModel cotacao)
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<ModalConfirmarCancelar>("DESEJA REALMENTE EXCLUIR A ORDEM DE COMPRA PERMANENTEMENTE?", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            _Cotacao.CancelarCotacao(Usr.CodEmpresa, cotacao);
+
+            listCotacoes = _Cotacao.ListarCotacoesPendentes(Usr.CodEmpresa, NumCotacao, NomeFantasia,OrdemCompra);
+        }
+
+        StateHasChanged();
+    }
+}

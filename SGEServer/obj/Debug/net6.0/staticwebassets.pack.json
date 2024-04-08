@@ -1,0 +1,137 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\Clientes-icon.svg",
+      "PackagePath": "staticwebassets\\Img\\Clientes-icon.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\bgk-login.webp",
+      "PackagePath": "staticwebassets\\Img\\bgk-login.webp"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-cadastro-clientes.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-cadastro-clientes.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-cadastro-produto.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-cadastro-produto.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-cotacao-salva.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-cotacao-salva.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-cotacao.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-cotacao.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-dados-empresa.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-dados-empresa.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-dashboard.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-dashboard.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-editar-cotacao.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-editar-cotacao.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-empresa-prazo.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-empresa-prazo.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-entrada.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-entrada.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-entrega.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-entrega.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-estoque.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-estoque.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-filtros.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-filtros.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-historico-de-movimentacoes.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-historico-de-movimentacoes.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-historico-entrada.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-historico-entrada.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-historico-saida.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-historico-saida.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-montar-otacao.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-montar-otacao.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-ordem.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-ordem.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-ordens-finalizadas.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-ordens-finalizadas.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-pesquisa-cliente.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-pesquisa-cliente.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-pesquisa-estoque.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-pesquisa-estoque.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-pesquisa-produtos.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-pesquisa-produtos.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-pessoa-fisica.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-pessoa-fisica.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-pessoa-juridica.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-pessoa-juridica.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-produto.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-produto.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\icon-saida.svg",
+      "PackagePath": "staticwebassets\\Img\\icon-saida.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\Img\\logo web-lab.svg",
+      "PackagePath": "staticwebassets\\Img\\logo web-lab.svg"
+    },
+    {
+      "Id": "C:\\Users\\thiag\\OneDrive\\Desktop\\SGE_Server\\SGEServer\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.SGEServer.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.build.SGEServer.props",
+      "PackagePath": "build\\SGEServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildMultiTargeting.SGEServer.props",
+      "PackagePath": "buildMultiTargeting\\SGEServer.props"
+    },
+    {
+      "Id": "obj\\Debug\\net6.0\\staticwebassets\\msbuild.buildTransitive.SGEServer.props",
+      "PackagePath": "buildTransitive\\SGEServer.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

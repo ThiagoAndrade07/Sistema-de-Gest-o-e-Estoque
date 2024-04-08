@@ -1,0 +1,285 @@
+﻿@page "/entregaspendentes/infocotacao/{CodCotacao:int}/{NumCotacao}"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject CotacaoController _Cotacao
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@layout MainLayout
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    /* cor do checkbox */
+    .mud-icon-root.mud-svg-icon{
+        color:#000;
+    }
+
+    .mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+        background-color: #063862;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .produto-entregue {
+        background-color: #9dd8b1;
+    }
+    .produto-pendente {
+        background-color: #d8b99d;
+    }
+    .produto-cancelado {
+        background-color: #d89d9d;
+    }
+
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    <h2>Informações da Ordem de Compra</h2>
+    <MudGrid Class="paper-style">
+        <MudGrid>
+                <MudItem xs="12">
+                    <MudText Class="sub-text">Informações da Empresa</MudText>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField Value="@NumCotacao" ReadOnly Variant="Variant.Filled" T="string" Label="N.º Cotação" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField Value="@DadosEmpresa.NomeFantasia" ReadOnly Variant="Variant.Filled" T="string" Label="Nome Da Empresa" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField Value="@DadosEmpresa.Cnpj" ReadOnly Variant="Variant.Filled" T="string" Label="CNPJ" />
+                </MudItem>
+        </MudGrid>
+        
+
+        <MudItem xs="12">
+            <MudTable MultiSelection="true" @bind-SelectedItems="SelectedProdutos"  Items="listProdutos" Hover="true" Breakpoint="Breakpoint.None">
+                <ColGroup>
+                    <col style="width: 80px;" />
+                    <col style="width: 240px;" />
+                    <col />
+                    <col />
+                    <col />
+                    <col />
+                    <col />
+                    <col style="width: 240px;" />
+                    <col style="width: 80px;" />
+                    <col style="width: 40px;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Quantidade</MudTh>
+                    <MudTh>Item</MudTh>
+                    <MudTh>NCM</MudTh>
+                    <MudTh>CA</MudTh>
+                    <MudTh>Un.Medida</MudTh>
+                    <MudTh>Valor Uni.</MudTh>
+                    <MudTh>Valor Total</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate Context="produto">
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Quantidade">@produto.QtdeItens</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Item">@produto.Item</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Ncm">@produto.Ncm</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="CA">@produto.CaEpi</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Uni.Medida">@produto.UnidadeMedida</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Valor Uni.">R$ @produto.ValorUnitario.ToString("F2")</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Valor Total">R$ @produto.ValorTotal.ToString("F2")</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Status">@TransformaCodStatus(produto.CodStatus)</MudTd>
+                    <MudTd Class="@GetRowClass(produto.CodStatus)">
+                        <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.DeleteForever" OnClick="@(() => BtnRemover(produto))" />
+                    </MudTd>
+                </RowTemplate>
+                <FooterContent>
+                    <MudTh Style="font-weight: 700; text-align: end; font-size: 20px;" Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="5">VALOR TOTAL: R$ @valorTotal.ToString("F2")</MudTh>
+                </FooterContent>
+                <NoRecordsContent>
+                    <MudText Color="Color.Error">Nenhum item nessa cotação :\</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Carregando...</MudText>
+                </LoadingContent>
+            </MudTable>
+            </MudItem>
+
+            <MudItem Class="d-flex justify-start align-center" xs="6">
+                <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                    Voltar
+                </MudButton>
+            </MudItem>
+            <MudItem Class="d-flex justify-end align-center" xs="6">
+                @* <MudButton OnClick="BtnEmitirNf" Variant="Variant.Filled" Class="btn-pequeno btn-verde">
+                    EMITIR NF
+                </MudButton> *@
+                <MudButton OnClick="BtnEntregarItens" Variant="Variant.Filled" Color="Color.Success">
+                    ENTREGAR
+                </MudButton>
+            </MudItem>
+
+
+        </MudGrid>
+
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+    private HashSet<ProdutosModel> SelectedProdutos = new HashSet<ProdutosModel>();
+
+    [Parameter]
+    public int CodCotacao { get; set; }
+    [Parameter]
+    public string? NumCotacao { get; set; }
+
+    private decimal valorTotal = 0;
+
+    private ProdutosModel DadosEmpresa = new ProdutosModel();
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+                listProdutos = _Cotacao.ListarProdutosCotacao(Usr.CodEmpresa, CodCotacao);
+                DadosEmpresa = _Cotacao.RetornarDadosCotacao(Usr.CodEmpresa, CodCotacao, DadosEmpresa);
+
+                foreach (var item in listProdutos)
+                {
+                    valorTotal += item.ValorTotal;
+                }
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    // -------- BTN VOLTAR ----------
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/entregaspendentes");
+    }
+
+    private async void BtnRemover(ProdutosModel produto)
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<ModalConfirmarCancelar>("DESEJA REALMENTE EXCLUIR O ITEM PERMANENTEMENTE DA ORDEM DE COMPRA?", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            _Cotacao.RemoverItemCotacao(Usr.CodEmpresa, CodCotacao, produto);
+
+            listProdutos = _Cotacao.ListarProdutosCotacao(Usr.CodEmpresa, CodCotacao);
+        }
+
+        StateHasChanged();
+    }
+
+    private string TransformaCodStatus(int codStatus)
+    {
+        return codStatus switch
+        {
+            4 => "Entregue",
+            5 => "Pendente",
+            6 => "Cancelado",
+            _ => "Desconhecido"
+        };
+    }
+
+    private string GetRowClass(int codStatus)
+    {
+        if (codStatus == 4)
+        {
+            return "produto-entregue";
+        }
+        else if (codStatus == 5)
+        {
+            return "produto-pendente";
+        }
+        else if (codStatus == 6)
+        {
+            return "produto-cancelado";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+
+
+    private void BtnEmitirNf()
+    {
+        //IRÁ EMITIR NF PARA OS ITENS SELECIONADOS
+    }
+
+    private void BtnEntregarItens()
+    {
+        foreach (var item in SelectedProdutos)
+        {
+            string resp =  _Cotacao.EntregarItemCotacao(Usr.CodEmpresa, CodCotacao, item);
+            if (resp.Substring(0, 4) == "ERRO")
+            {
+                Snackbar.Add(resp.Split("|")[0], Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add(resp.Split("|")[0], Severity.Success);
+            }
+        }
+        listProdutos = _Cotacao.ListarProdutosCotacao(Usr.CodEmpresa, CodCotacao);
+    }
+}

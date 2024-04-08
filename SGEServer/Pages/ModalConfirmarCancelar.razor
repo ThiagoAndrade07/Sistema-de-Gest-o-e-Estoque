@@ -1,0 +1,23 @@
+﻿<MudGrid Class="d-flex justify-center pa-5">
+	<MudItem xs="6" Class="d-flex justify-center">
+		<MudButton Variant="Variant.Outlined" Color="Color.Primary" Style="width: 100%;" OnClick="OnClickCancelar">Cancelar</MudButton>
+	</MudItem>
+	<MudItem xs="6" Class="d-flex justify-center">
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" Style="width: 100%;" OnClick="OnClickConfirmar">Confirmar</MudButton>
+	</MudItem>
+</MudGrid>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; }
+
+	private void OnClickCancelar()
+	{
+		MudDialog!.Close(DialogResult.Cancel());
+	}
+	
+	private void OnClickConfirmar()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+}

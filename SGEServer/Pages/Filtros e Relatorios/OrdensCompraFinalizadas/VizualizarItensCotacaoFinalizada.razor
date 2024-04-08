@@ -1,0 +1,254 @@
+﻿@page "/vizualizaritenscotacaofinalizada/{NumCotacao}/{CodCotacao:int}"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject CotacaoController _Cotacao
+@inject IDialogService DialogService
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .btn-grande {
+        color: @Variaveis.CorPreta;
+        width: 180px;
+        height: 60px;
+        border-radius: 40px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-pequeno {
+        color: @Variaveis.CorPreta;
+        width: 200px;
+        height: 40px;
+        border-radius: 40px;
+        margin: 20px 0;
+    }
+
+    /* ------- AZUL ------- */
+    .btn-azul {
+        background-color: @Variaveis.CorAzulMenu;
+    }
+
+        .btn-azul:hover {
+            background-color: rgba(79,158,192,0.6);
+        }
+
+    .btn-azulctive {
+        background-color: rgba(79,158,192,1);
+    }
+
+    /* ------- VERDE ------- */
+    .btn-verde {
+        background-color: @Variaveis.CorVerdeMenu;
+    }
+
+        .btn-verde:hover {
+            background-color: rgba(154, 222, 123,0.6);
+        }
+
+        .btn-verde:active {
+            background-color: rgba(154, 222, 123);
+        }
+
+    /* ------- VERMELHO ------- */
+
+    .btn-vermelho {
+        background-color: @Variaveis.CorVermelhoMenu;
+    }
+
+        .btn-vermelho:hover {
+            background-color: rgba(255, 120, 120,0.6);
+        }
+
+        .btn-vermelho:active {
+            background-color: rgba(255, 120, 120,1);
+        }
+
+    #teste {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .produto-entregue {
+        background-color: #9dd8b1;
+    }
+
+    .produto-pendente {
+        background-color: #d8b99d;
+    }
+
+    .produto-cancelado {
+        background-color: #d89d9d;
+    }
+
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+        <h2>Informações da Ordem de Compra</h2>
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <MudTextField Value="@NumCotacao" ReadOnly Variant="Variant.Filled" T="string" Label="N.º Cotação" />
+             </MudItem>
+             <MudItem xs="12" sm="4">
+                 <MudTextField Value="@DadosEmpresa.NomeFantasia" ReadOnly Variant="Variant.Filled" T="string" Label="Nome Da Empresa" />
+             </MudItem>
+             <MudItem xs="12" sm="4">
+                 <MudTextField Value="@DadosEmpresa.Cnpj" ReadOnly Variant="Variant.Filled" T="string" Label="CNPJ" />
+             </MudItem>
+
+             <MudItem xs="12">
+                 <MudTable MultiSelection="false" Items="listProdutos" Hover="true" Breakpoint="Breakpoint.None">
+                     <ColGroup>
+                         <col style="width: 80px;" />
+                         <col style="width: 240px;" />
+                         <col />
+                         <col />
+                         <col />
+                         <col />
+                         <col />
+                         <col style="width: 240px;" />
+                         <col style="width: 80px;" />
+                         <col style="width: 40px;" />
+                     </ColGroup>
+                     <HeaderContent>
+                         <MudTh>Quantidade</MudTh>
+                         <MudTh>Item</MudTh>
+                         <MudTh>NCM</MudTh>
+                         <MudTh>CA</MudTh>
+                         <MudTh>Un.Medida</MudTh>
+                         <MudTh>Valor Uni.</MudTh>
+                         <MudTh>Valor Total</MudTh>
+                         <MudTh>Status</MudTh>
+                         <MudTh></MudTh>
+                     </HeaderContent>
+                     <RowTemplate Context="produto">
+                         <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Quantidade">@produto.QtdeItens</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Item">@produto.Item</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Ncm">@produto.Ncm</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="CA">@produto.CaEpi</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Uni.Medida">@produto.UnidadeMedida</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Valor Uni.">R$ @produto.ValorUnitario.ToString("F2")</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Valor Total">R$ @produto.ValorTotal.ToString("F2")</MudTd>
+                            <MudTd Class="@GetRowClass(produto.CodStatus)" DataLabel="Status">@TransformaCodStatus(produto.CodStatus)</MudTd>
+                        </RowTemplate>
+                        <FooterContent>
+                            <MudTh Style="font-weight: 700; text-align: end; font-size: 20px;" Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="5">VALOR TOTAL: R$ @valorTotal.ToString("F2")</MudTh>
+                        </FooterContent>
+                        <NoRecordsContent>
+                            <MudText Color="Color.Error">Nenhum item nessa cotação :\</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Carregando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                </MudItem>
+
+                <MudItem Class="d-flex justify-start align-center" xs="6">
+                    <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Class="btn-pequeno btn-vermelho">
+                        Voltar
+                    </MudButton>
+                </MudItem>
+
+
+            </MudGrid>
+
+        </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+
+    [Parameter]
+    public string? NumCotacao { get; set; }
+    [Parameter]
+    public int CodCotacao { get; set; }
+
+    private decimal valorTotal = 0;
+
+    private ProdutosModel DadosEmpresa = new ProdutosModel();
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+                listProdutos = _Cotacao.ListarProdutosCotacao(Usr.CodEmpresa, CodCotacao);
+                DadosEmpresa = _Cotacao.RetornarDadosCotacao(Usr.CodEmpresa, CodCotacao, DadosEmpresa);
+
+                foreach (var item in listProdutos)
+                {
+                    valorTotal += item.ValorTotal;
+                }
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    // -------- BTN VOLTAR ----------
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/ordenscomprafinalizadas");
+    }
+
+    private string TransformaCodStatus(int codStatus)
+    {
+        return codStatus switch
+        {
+            4 => "Entregue",
+            5 => "Pendente",
+            6 => "Cancelado",
+            _ => "Desconhecido"
+        };
+    }
+
+    private string GetRowClass(int codStatus)
+    {
+        if (codStatus == 4)
+        {
+            return "produto-entregue";
+        }
+        else if (codStatus == 5)
+        {
+            return "produto-pendente";
+        }
+        else if (codStatus == 6)
+        {
+            return "produto-cancelado";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    
+}

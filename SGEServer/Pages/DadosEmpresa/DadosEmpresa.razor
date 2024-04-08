@@ -1,0 +1,852 @@
+﻿@page "/dadosempresa"
+
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ClientesController _Clientes
+@inject AuthenticationLogin authStateProvider
+@inject ViaCEPService _ViaCep
+@inject CnpjService _CnpjService
+@layout MainLayout
+<style>
+    /* cor dos label do textfield */
+    .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+        color: #ACACAB !important;
+    }
+    /* cor do required caracteres */
+    .ms-auto {
+        color: #ACACAB;
+    }
+    /* cor do required text */
+    .me-auto {
+        color: #ACACAB;
+    }
+    .mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+        background-color: #063862;
+    }
+    /* cor do label mudSelect */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff;
+    }
+    /* cor das opcoes do mudSelect */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    /* cor do button do mud select */
+    .mud-icon-root.mud-svg-icon {
+        color: #fff;
+    }
+    /* cor texto do textarea */
+    .mud-input > textarea.mud-input-root {
+        color: #fff !important;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    .pt-16, .py-16 {
+        padding:0px;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .custom-file-input {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        cursor: pointer;
+        color: transparent;
+        background-color: lightgray;
+        border-radius: 20px; 
+        border: 2px solid #2196f3;
+        width: 240px; 
+        height: 60px; 
+        text-align: center;
+        line-height: 56px;
+    }
+
+        .custom-file-input::before {
+            content: 'Selecione a logo da empresa';
+            position: absolute;
+            left: 0;
+            text-transform:uppercase;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #011E36;
+            border-radius: 10px;
+            color: white;
+            line-height: 60px; 
+            text-align: center;
+        }
+
+        .custom-file-input:hover::before {
+            background-color: #063862;
+        }
+
+        .custom-file-input input[type='file'] {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+</style>
+
+@if (isAuthenticated)
+{
+    <h2>Dados Da Empresa</h2>
+    <div class="margin-padrao">
+        <MudGrid Class="d-flex">
+            <MudItem xs="6">
+                <div class="custom-file-input">
+                    <InputFile OnChange="UploadLogo">Selecione a logo da Empresa</InputFile>
+                </div>
+            </MudItem>
+        </MudGrid>
+        
+
+        <MudGrid>
+            <MudGrid Class="paper-style mt-3 mb-8">
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Razão Social é obrigatório!" Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldRazaoSocial" @bind-Value="RazaoSocial" Variant="@ObterVariant()" T="string" Label="Razão Social" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Nome Fantasia é obrigatório!" Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldNomeFantasia" @bind-Value="NomeFantasia" Variant="@ObterVariant()" T="string" Label="Nome Fantasia" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo CNPJ é obrigatório!" Error="@CnpjError" ErrorText="@CnpjErrorTxt" Counter="18" MaxLength="18" Immediate="true" HelperText="Ex.: 00.000.000/0000-00" Mask="@(new PatternMask("00.000.000/0000-00"))" OnBlur="OnBlurCnpj" @ref="TextFieldCnpj" @bind-Value="Cnpj" Variant="@ObterVariant()" T="string" Label="CNPJ" />
+                </MudItem>
+                <MudItem Class="d-flex align-center" xs=12 sm=6>
+                    <MudTextField Counter="50" MaxLength="50" Immediate="true" @bind-Value="InscricaoEstadual" Variant="@ObterVariant()" T="string" Label="Inscrição Estadual" />
+                </MudItem>
+            </MudGrid>
+            
+            <MudGrid Class="paper-style mb-8">
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo CEP é obrigatório!" Error="@CepError" ErrorText="@CepErrorTxt" HelperText="Ex.: 00000-000" Mask="@(new PatternMask("00000-000"))" OnBlur="OnBlurCep" Counter="9" MaxLength="9" Immediate="true" @ref="TextFieldCep" @bind-Value="Cep" Variant="@ObterVariant()" T="string" Label="CEP" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Counter="100" MaxLength="100" Immediate="true" @bind-Value="Setor" Variant="@ObterVariant()" T="string" Label="Setor" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Número é obrigatório!" Counter="10" MaxLength="10" Immediate="true" @ref="TextFieldNumero" @bind-Value="Numero" Variant="@ObterVariant()" T="string" Label="Número" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Endereço é obrigatório!" Counter="250" MaxLength="250" Immediate="true" @ref="TextFieldEndereco" @bind-Value="Endereco" Variant="@ObterVariant()" T="string" Label="Endereço" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Cidade é obrigatório!" Counter="100" MaxLength="100" Immediate="true" @ref="TextFieldCidade" @bind-Value="Cidade" Variant="@ObterVariant()" T="string" Label="Cidade" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Bairro é obrigatório!" Counter="100" MaxLength="100" Immediate="true" @ref="TextFieldBairro" @bind-Value="Bairro" Variant="@ObterVariant()" T="string" Label="Bairro" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Counter="150" MaxLength="150" @bind-Value="Complemento" Variant="@ObterVariant()" T="string" Label="Complemento" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudTextField Required RequiredError="O campo Estado é obrigatório!" Counter="2" MaxLength="2" Immediate="true" Error="@EstadoError" ErrorText="@EstadoErrorTxt" OnBlur="OnBlurEstado" @ref="TextFieldEstado" @bind-Value="Estado" Variant="@ObterVariant()" T="string" Label="Estado" />
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Class="paper-style">
+                <MudItem xs="12" sm="4">
+                    <MudTextField Counter="14" MaxLength="14" Immediate="true" Error="@TelError" ErrorText="@TelErrorTxt" HelperText="Ex.: (00) 0000-0000" Mask="@(new PatternMask("(00) 0000-0000"))" OnBlur="OnBlurTelefone" @ref="TextFieldTelefone" @bind-Value="Telefone" Variant="@ObterVariant()" T="string" Label="Telefone" />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudTextField Counter="16" MaxLength="16" Immediate="true" Error="@CelError" ErrorText="@CelErrorTxt" HelperText="Ex.: (00) 0 0000-0000" Mask="@(new PatternMask("(00) 0 0000-0000"))" OnBlur="OnBlurCelular" @ref="TextFieldCelular" @bind-Value="Celular" Variant="@ObterVariant()" T="string" Label="Celular" />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    @foreach (var item in EmailList)
+                    {
+                        <MudTextField @bind-Value="item.DescrDois" Variant="@ObterVariant()" T="string" Label="@item.DescrUm" />
+                    }
+                    <div class="w-100 pt-2 d-flex justify-end align-center">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="BtnAddEmail" Variant="Variant.Filled" />
+                    </div>
+                </MudItem>
+            </MudGrid>
+
+            <MudItem xs="12" Class="d-flex justify-center align-center">
+                <MudText Color="@CorMensagem">@Mensagem</MudText>
+            </MudItem>
+            <MudItem xs="0" sm="6"></MudItem>
+            <MudItem Class="d-flex" xs="12">
+                <MudItem xs="3">
+                    <MudButton Color="Color.Info" Variant="Variant.Filled" OnClick="() => AbrirModalExclusao(CodCliente)">Limpar Dados</MudButton>
+                </MudItem>
+                <MudItem xs="5"></MudItem>
+                <MudItem xs="4" Class="d-flex justify-end">
+                    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BtnVoltar">Cancelar</MudButton>
+                    <MudButton Class="ml-4" Color="Color.Success" Variant="Variant.Filled" OnClick="BtnAcao">@BotaoAcao</MudButton>
+                </MudItem>
+
+            </MudItem>
+
+                
+        </MudGrid>
+        </div>
+}
+
+
+@code {
+
+
+
+    private bool isAuthenticated = false;
+
+
+    private string RazaoSocial = string.Empty;
+    private string NomeFantasia = string.Empty;
+    private string Cnpj = string.Empty;
+    private string InscricaoEstadual = string.Empty;
+    private string Cep = string.Empty;
+    private string Setor = string.Empty;
+    private string Numero = string.Empty;
+    private string Endereco = string.Empty;
+    private string Cidade = string.Empty;
+    private string Bairro = string.Empty;
+    private string Complemento = string.Empty;
+    private string Estado = string.Empty;
+    private string Telefone = string.Empty;
+    private string Celular = string.Empty;
+    private bool dadosCarregados = false;
+    private int CodCliente = 0;
+    private ElementReference inputFileElement;
+    private InputFile inputFile;
+    private IBrowserFile selectedFile;
+
+    private List<GenericoModel> EmailList = new()
+    {
+        new()
+        {
+            DescrUm = "E-mail 1",
+            DescrDois = ""
+        }
+    };
+
+    private ViaCepModel DadosCep = new();
+    private CnpjModel DadosCnpj = new();
+
+    private bool CnpjError = false;
+    private string CnpjErrorTxt = string.Empty;
+    private bool CepError = false;
+    private string CepErrorTxt = string.Empty;
+    private bool EstadoError = false;
+    private string EstadoErrorTxt = string.Empty;
+    private bool TelError = false;
+    private string TelErrorTxt = string.Empty;
+    private bool CelError = false;
+    private string CelErrorTxt = string.Empty;
+    private string BotaoAcao = "Cadastrar";
+
+    private string Mensagem = string.Empty;
+    private Color CorMensagem = Color.Default;
+
+    private MudTextField<string>? TextFieldRazaoSocial;
+    private MudTextField<string>? TextFieldNomeFantasia;
+    private MudTextField<string>? TextFieldCnpj;
+    private MudTextField<string>? TextFieldCep;
+    private MudTextField<string>? TextFieldNumero;
+    private MudTextField<string>? TextFieldEndereco;
+    private MudTextField<string>? TextFieldCidade;
+    private MudTextField<string>? TextFieldBairro;
+    private MudTextField<string>? TextFieldEstado;
+    private MudTextField<string>? TextFieldTelefone;
+    private MudTextField<string>? TextFieldCelular;
+
+    private ClientesModel DadosEmpresaDoBanco = new ClientesModel();
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+            VerificaDadosEmpresaSalvo();
+
+            StateHasChanged();
+        }
+    }
+
+
+
+    private async Task UploadLogo(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        // Assumindo que você quer converter e armazenar imediatamente após o upload
+        var imageBytes = await ConvertFileToByteArrayAsync(selectedFile);
+        // Supondo que você tenha uma propriedade para armazenar o array de bytes da imagem
+        DadosEmpresaDoBanco.Imagem = imageBytes;
+    }
+
+    private async Task<byte[]> ConvertFileToByteArrayAsync(IBrowserFile file)
+    {
+        if (file != null)
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
+        return null;
+    }
+
+
+    private async void BtnCadastrar()
+    {
+        if (await ValidarCampos())
+        {
+            byte[] imageBytes = null;
+            if (selectedFile != null)
+            {
+                imageBytes = await ConvertFileToByteArrayAsync(selectedFile);
+                // Aqui você pode salvar 'imageBytes' juntamente com os outros dados
+            }
+
+            string EmailConcat = string.Empty;
+
+            foreach (var item in EmailList)
+            {
+                if (!string.IsNullOrEmpty(item.DescrDois))
+                {
+                    EmailConcat += item.DescrDois + ",";
+                }
+            }
+            DadosEmpresaDoBanco.RazaoSocial = RazaoSocial;
+            DadosEmpresaDoBanco.NomeFantasia = NomeFantasia;
+            DadosEmpresaDoBanco.Cnpj = Cnpj;
+            DadosEmpresaDoBanco.InscricaoEstadual = InscricaoEstadual;
+            DadosEmpresaDoBanco.Cep = Cep;
+            DadosEmpresaDoBanco.Setor = Setor;
+            DadosEmpresaDoBanco.Numero = Numero;
+            DadosEmpresaDoBanco.Endereco = Endereco;
+            DadosEmpresaDoBanco.Cidade = Cidade;
+            DadosEmpresaDoBanco.Bairro = Bairro;
+            DadosEmpresaDoBanco.Complemento = Complemento;
+            DadosEmpresaDoBanco.Estado = Estado.ToUpper();
+            DadosEmpresaDoBanco.Telefone = Telefone;
+            DadosEmpresaDoBanco.Celular = Celular;
+            DadosEmpresaDoBanco.Imagem = imageBytes; 
+
+
+            var resp = _Clientes.SalvaDadosEmpresa(Usr.CodEmpresa, DadosEmpresaDoBanco);
+
+            Snackbar.Add(resp.Split("|")[0], Severity.Success);
+
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+
+
+
+    private void BtnAddEmail()
+    {
+        GenericoModel novoCampo = new GenericoModel()
+            {
+                DescrUm = $"E-mail {EmailList.Count() + 1}",
+                DescrDois = ""
+            };
+
+        EmailList.Add(novoCampo);
+
+        StateHasChanged();
+    }
+
+    private void VerificaDadosEmpresaSalvo()
+    {
+        if (isAuthenticated && Usr.CodEmpresa > 0)
+        {
+            if (_Clientes.VerificaDadosEmpresaExistem(Usr.CodEmpresa))
+            {
+                DadosEmpresaDoBanco = _Clientes.ObterDadosEmpresa(Usr.CodEmpresa);
+                PreencherCampos(DadosEmpresaDoBanco);
+                BotaoAcao = "Editar";
+            }
+            else
+            {
+                BotaoAcao = "Cadastrar";
+            }
+        }
+    }
+
+    private async void BtnAcao()
+    {
+        if (await ValidarCampos())
+        {
+            string EmailConcat = string.Join(",", EmailList.Select(e => e.DescrDois));
+
+            DadosEmpresaDoBanco.RazaoSocial = RazaoSocial;
+            DadosEmpresaDoBanco.Email = EmailConcat;
+
+            if (BotaoAcao == "Cadastrar")
+            {
+                BtnCadastrar();
+            }
+            else if (BotaoAcao == "Editar")
+            {
+                BtnEditar();
+            }
+        }
+    }
+
+    private async void BtnEditar()
+    {
+        var parameters = new DialogParameters();
+        var options = new DialogOptions { DisableBackdropClick = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<ConfirmarEdicaoDadosEmpresa>("Confirmar Edição", parameters, options);
+
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            SalvarEdicao();
+
+        }
+    }
+
+    private async void SalvarEdicao()
+    {
+        if (await ValidarCampos())
+        {
+
+            byte[] imageBytes = null;
+            if (selectedFile != null)
+            {
+                imageBytes = await ConvertFileToByteArrayAsync(selectedFile);
+                // Aqui você pode salvar 'imageBytes' juntamente com os outros dados
+            }
+
+            string EmailConcat = string.Empty;
+
+            foreach (var item in EmailList)
+            {
+                if (!string.IsNullOrEmpty(item.DescrDois))
+                {
+                    EmailConcat += item.DescrDois + ",";
+                }
+            }
+
+            DadosEmpresaDoBanco.RazaoSocial = RazaoSocial;
+            DadosEmpresaDoBanco.NomeFantasia = NomeFantasia;
+            DadosEmpresaDoBanco.Cnpj = Cnpj;
+            DadosEmpresaDoBanco.InscricaoEstadual = InscricaoEstadual;
+            DadosEmpresaDoBanco.Cep = Cep;
+            DadosEmpresaDoBanco.Setor = Setor;
+            DadosEmpresaDoBanco.Numero = Numero;
+            DadosEmpresaDoBanco.Endereco = Endereco;
+            DadosEmpresaDoBanco.Cidade = Cidade;
+            DadosEmpresaDoBanco.Bairro = Bairro;
+            DadosEmpresaDoBanco.Complemento = Complemento;
+            DadosEmpresaDoBanco.Estado = Estado.ToUpper();
+            DadosEmpresaDoBanco.Telefone = Telefone;
+            DadosEmpresaDoBanco.Celular = Celular;
+            DadosEmpresaDoBanco.Email = EmailConcat;
+
+            var resp = _Clientes.EditaDadosEmpresa(Usr.CodEmpresa, DadosEmpresaDoBanco);
+
+            Snackbar.Add(resp.Split("|")[0], Severity.Success);
+
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+
+        StateHasChanged();
+    }
+
+
+
+    private async Task AbrirModalExclusao(int CodCliente)
+    {
+        LimparTela();
+
+        var parameters = new DialogParameters { ["CodCliente"] = CodCliente };
+        var dialog = DialogService.Show<RemoverDadosEmpresa>("Confirmar Exclusão", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is bool confirmacao && confirmacao)
+        {
+            
+        }
+    }
+
+
+
+    
+
+    private async void LimparTela()
+    {
+        RazaoSocial = string.Empty;
+        NomeFantasia = string.Empty;
+        Cnpj = string.Empty;
+        InscricaoEstadual = string.Empty;
+        Cep = string.Empty;
+        Setor = string.Empty;
+        Numero = string.Empty;
+        Endereco = string.Empty;
+        Cidade = string.Empty;
+        Bairro = string.Empty;
+        Complemento = string.Empty;
+        Estado = string.Empty;
+        Telefone = string.Empty;
+        Celular = string.Empty;
+        EmailList.Clear();
+        EmailList.Add(new()
+            {
+                DescrUm = "E-mail 1",
+                DescrDois = ""
+            });
+
+        await TextFieldRazaoSocial!.FocusAsync();
+
+        StateHasChanged();
+    }
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    private async Task<bool> ValidarCampos()
+    {
+        if (string.IsNullOrEmpty(RazaoSocial))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Razão Social";
+            CorMensagem = Color.Error;
+            await TextFieldRazaoSocial!.FocusAsync();
+            await TextFieldRazaoSocial!.BlurAsync();
+            await TextFieldRazaoSocial!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(NomeFantasia))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Nome Fantasia";
+            CorMensagem = Color.Error;
+            await TextFieldNomeFantasia!.FocusAsync();
+            await TextFieldNomeFantasia!.BlurAsync();
+            await TextFieldNomeFantasia!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Cnpj))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo CNPJ";
+            CorMensagem = Color.Error;
+            CnpjError = true;
+            CnpjErrorTxt = "O campo CNPJ é obrigatório!";
+            await TextFieldCnpj!.FocusAsync();
+            await TextFieldCnpj!.BlurAsync();
+            await TextFieldCnpj!.FocusAsync();
+            return false;
+        }
+        else
+        {
+            CnpjError = false;
+        }
+
+        if (Cnpj.Length < 18)
+        {
+            Mensagem = "ERRO! Por favor preencha o campo CNPJ com um valor válido (00.000.000/0000-00)";
+            CorMensagem = Color.Error;
+            CnpjError = true;
+            CnpjErrorTxt = "Preencha um valor válido Ex.: 00.000.000/0000-00";
+            await TextFieldCnpj!.FocusAsync();
+            return false;
+        }
+        else
+        {
+            CnpjError = false;
+        }
+
+        if (string.IsNullOrEmpty(Cep))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo CEP";
+            CorMensagem = Color.Error;
+            CepError = true;
+            CepErrorTxt = "O campo CEP é obrigatório!";
+            await TextFieldCep!.FocusAsync();
+            await TextFieldCep!.BlurAsync();
+            await TextFieldCep!.FocusAsync();
+            return false;
+        }
+        else
+        {
+            CepError = false;
+        }
+
+        if (Cep.Length < 9)
+        {
+            Mensagem = "ERRO! Por favor preencha o campo CEP com um valor válido (00000-000)";
+            CorMensagem = Color.Error;
+            CepError = true;
+            CepErrorTxt = "Preencha um valor válido Ex.: 00000-000";
+            await TextFieldCep!.FocusAsync();
+            return false;
+        }
+        else
+        {
+            CepError = false;
+        }
+
+        if (string.IsNullOrEmpty(Numero))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Número";
+            CorMensagem = Color.Error;
+            await TextFieldNumero!.FocusAsync();
+            await TextFieldNumero!.BlurAsync();
+            await TextFieldNumero!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Endereco))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Endereço";
+            CorMensagem = Color.Error;
+            await TextFieldEndereco!.FocusAsync();
+            await TextFieldEndereco!.BlurAsync();
+            await TextFieldEndereco!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Cidade))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Cidade";
+            CorMensagem = Color.Error;
+            await TextFieldCidade!.FocusAsync();
+            await TextFieldCidade!.BlurAsync();
+            await TextFieldCidade!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Bairro))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Bairro";
+            CorMensagem = Color.Error;
+            await TextFieldBairro!.FocusAsync();
+            await TextFieldBairro!.BlurAsync();
+            await TextFieldBairro!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Estado))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Estado";
+            CorMensagem = Color.Error;
+            await TextFieldEstado!.FocusAsync();
+            await TextFieldEstado!.BlurAsync();
+            await TextFieldEstado!.FocusAsync();
+            return false;
+        }
+
+        if (Estado.Length < 2 || Estado.Any(char.IsDigit))
+        {
+            Mensagem = "ERRO! Por favor preencha o campo Estado com um valor válido";
+            CorMensagem = Color.Error;
+            EstadoError = true;
+            EstadoErrorTxt = "Preencha um valor válido! Ex.: PR";
+            await TextFieldEstado!.FocusAsync();
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(Telefone))
+        {
+            if (Telefone.Length < 14)
+            {
+                Mensagem = "ERRO! Por favor preencha o campo Telefone com um valor válido ((00) 0000-0000)";
+                CorMensagem = Color.Error;
+                TelError = true;
+                TelErrorTxt = "Preencha um valor válido Ex.: (00) 0000-0000";
+                await TextFieldTelefone!.FocusAsync();
+                return false;
+            }
+            else
+            {
+                TelError = false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Celular))
+        {
+            if (Celular.Length < 16)
+            {
+                Mensagem = "ERRO! Por favor preencha o campo Celular com um valor válido ((00) 0 0000-0000)";
+                CorMensagem = Color.Error;
+                CelError = true;
+                CelErrorTxt = "Preencha um valor válido Ex.: (00) 0 0000-0000";
+                await TextFieldCelular!.FocusAsync();
+                return false;
+            }
+            else
+            {
+                CelError = false;
+            }
+        }
+
+        return true;
+    }
+
+    private void OnBlurTelefone()
+    {
+        TelError = false;
+        TelErrorTxt = "";
+        StateHasChanged();
+    }
+
+    private void OnBlurCelular()
+    {
+        CelError = false;
+        CelErrorTxt = "";
+        StateHasChanged();
+    }
+
+    private async void OnBlurCep()
+    {
+        if (!string.IsNullOrEmpty(Cep))
+        {
+            CepError = false;
+            CepErrorTxt = "";
+
+            if (Cep.Length == 9)
+            {
+                if (String.IsNullOrEmpty(Estado) || String.IsNullOrEmpty(Cidade))
+                {
+                    string cep = Cep.Replace("-", string.Empty);
+                    DadosCep = await _ViaCep.ConsultarCEPAsync(cep);
+
+                    if (DadosCep.Cep != null)
+                    {
+                        Bairro = DadosCep.Bairro!;
+                        Complemento = DadosCep.Complemento!;
+                        Cidade = DadosCep.Localidade!;
+                        Estado = DadosCep.Uf!;
+                        Endereco = DadosCep.Logradouro!;
+
+                        await TextFieldNumero!.FocusAsync();
+                    }
+                }
+            }
+        }
+        else
+        {
+            CepError = true;
+            CepErrorTxt = "O campo CEP é obrigatório!";
+        }
+
+        StateHasChanged();
+    }
+
+    private async void OnBlurCnpj()
+    {
+        if (!string.IsNullOrEmpty(Cnpj))
+        {
+            CnpjError = false;
+            CnpjErrorTxt = "";
+            StateHasChanged();
+            if (Cnpj.Length == 18)
+            {
+                DadosCnpj = await _CnpjService.ConsultarCNPJAsync(Cnpj.Replace(".", "").Replace("/", "").Replace("-", ""));
+                if(DadosCnpj != null)
+                {
+                    if (DadosCnpj.Cnpj != null)
+                    {
+                        RazaoSocial = DadosCnpj.RazaoSocial;
+                        NomeFantasia = DadosCnpj.NomeFantasia;
+                        Cep = DadosCnpj.Cep.Replace(".", "");
+                        Numero = DadosCnpj.Numero;
+                        Endereco = DadosCnpj.Logradouro;
+                        Cidade = DadosCnpj.Municipio;
+                        Bairro = DadosCnpj.Bairro;
+                        Complemento = DadosCnpj.Complemento;
+                        Estado = DadosCnpj.Uf;
+                        Telefone = DadosCnpj.Telefone;
+                    } 
+                }
+
+            }
+        }
+        else
+        {
+            CnpjError = true;
+            CnpjErrorTxt = "O campo CNPJ é obrigatório!";
+        }
+        StateHasChanged();
+    }
+
+    private void OnBlurEstado()
+    {
+        if (!string.IsNullOrEmpty(Estado))
+        {
+            EstadoError = false;
+            EstadoErrorTxt = "";
+            StateHasChanged();
+        }
+        else
+        {
+            EstadoError = true;
+            EstadoErrorTxt = "O campo Estado é obrigatório!";
+        }
+    }
+
+    private void PreencherCampos(ClientesModel dados)
+    {
+        if (dados != null)
+        {
+            RazaoSocial = dados.RazaoSocial;
+            NomeFantasia = dados.NomeFantasia;
+            Cnpj = dados.Cnpj;
+            InscricaoEstadual = dados.InscricaoEstadual;
+            Cep = dados.Cep;
+            Setor = dados.Setor;
+            Numero = dados.Numero;
+            Endereco = dados.Endereco;
+            Cidade = dados.Cidade;
+            Bairro = dados.Bairro;
+            Complemento = dados.Complemento;
+            Estado = dados.Estado;
+            Telefone = dados.Telefone;
+            Celular = dados.Celular;
+            CodCliente = dados.CodCliente;
+
+            EmailList.Clear();
+            if (!string.IsNullOrEmpty(dados.Email))
+            {
+                var emails = dados.Email.Split(',');
+                foreach (var email in emails)
+                {
+                    EmailList.Add(new GenericoModel
+                        {
+                            DescrUm = "E-mail",
+                            DescrDois = email.Trim()
+                        });
+                }
+            }
+        }
+
+        dadosCarregados = true;
+
+        StateHasChanged();
+
+    }
+
+    private Variant ObterVariant()
+    {
+        return dadosCarregados ? Variant.Filled : Variant.Text;
+    }
+   
+}

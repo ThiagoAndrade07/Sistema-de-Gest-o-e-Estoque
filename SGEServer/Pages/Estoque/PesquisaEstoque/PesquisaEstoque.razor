@@ -1,0 +1,160 @@
+﻿@page "/pesquisaestoque"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject ProdutosController _Produtos
+@layout MainLayout
+
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    <h2>Produtos Em Estoque</h2>
+        <MudGrid Class="paper-style">
+            <MudItem xs="12">
+                <MudText Class="sub-text">Filtros</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Variant="Variant.Text" T="string" Label="Nome" />
+            </MudItem>
+
+        <MudItem xs="12">
+            <MudTable Items="listProdutos" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Breakpoint="Breakpoint.None">
+                <ToolBarContent>
+                    <MudText Style="font-weight: 700;">@listProdutos.Count() Produtos Encontrados</MudText>
+                </ToolBarContent>
+                <ColGroup>
+                    <col style="width: 180px;" />
+                    <col />
+                    <col style="width: 180px;" />
+                    <col style="width: 180px;" />
+                    <col style="width: 240px;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Id</MudTh>
+                    <MudTh>Item</MudTh>
+                    <MudTh>Qtde Em Estoque</MudTh>
+                    <MudTh>NCM</MudTh>
+                    <MudTh>Endereço no Estoque</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@context.CodProduto</MudTd>
+                    <MudTd DataLabel="Item">@context.Item</MudTd>
+                    <MudTd DataLabel="Qtde Em Estoque">@context.QuantidadeEstoque</MudTd>
+                    <MudTd DataLabel="NCM">@context.Ncm</MudTd>
+                    <MudTd DataLabel="Endereço no Estoque">@context.EnderecoEstoque</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Color="Color.Error">Não foi encontrado nenhum produto :\</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Carregando...</MudText>
+                </LoadingContent>
+            </MudTable>
+        </MudItem>
+
+            <MudItem Class="d-flex justify-start align-center" xs="4">
+                <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                    Voltar
+                </MudButton>
+            </MudItem>
+            <MudItem xs="8"></MudItem>
+
+
+        </MudGrid>
+
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+    private LoginModel Usr = new();
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+                listProdutos = CarregaTabelaProdutos("");
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private List<ProdutosModel> CarregaTabelaProdutos(string name)
+    {
+        var resp = _Produtos.CarregaProdutosCadastrados(Usr.CodEmpresa, name);
+
+        return resp;
+    }
+
+
+
+
+
+    // -------- BTN VOLTAR ----------
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+}

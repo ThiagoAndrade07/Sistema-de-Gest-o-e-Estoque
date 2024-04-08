@@ -1,0 +1,155 @@
+﻿@inject ClientesController _Clientes
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+
+
+    .btn-grande {
+        color: @Variaveis.CorPreta;
+        width: 180px;
+        height: 60px;
+        border-radius: 40px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-pequeno {
+        color: @Variaveis.CorPreta;
+        width: 200px;
+        height: 40px;
+        border-radius: @Variaveis.BorderRadius;
+        margin: 20px 0 0 0;
+    }
+
+
+    /* ------- AZUL ------- */
+    .btn-azul {
+        background-color: #4f9ec0;
+    }
+
+        .btn-azul:hover {
+            background-color: rgba(79,158,192,0.6);
+        }
+
+    .btn-azulctive {
+        background-color: rgba(79,158,192,1);
+    }
+
+    /* ------- VERDE ------- */
+    .btn-verde {
+        background-color: #9ADE7B;
+    }
+
+        .btn-verde:hover {
+            background-color: rgba(154, 222, 123,0.6);
+        }
+
+        .btn-verde:active {
+            background-color: rgba(154, 222, 123);
+        }
+
+    /* ------- VERMELHO ------- */
+
+    .btn-vermelho {
+        background-color: #FF7878;
+    }
+
+        .btn-vermelho:hover {
+            background-color: rgba(255, 120, 120,0.6);
+        }
+
+        .btn-vermelho:active {
+            background-color: rgba(255, 120, 120,1);
+        }
+
+    /* -------- FORMULARIO DA COTAÇÃO ----------- */
+
+    .form-cotacao {
+        border: 1px solid @Variaveis.CorPreta;
+        border-radius: @Variaveis.BorderRadius;
+    }
+
+    h3 {
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 10px 0 10px 10px;
+        text-transform: uppercase;
+    }
+
+    h4 {
+        font-size: @Variaveis.FontSubTitulo;
+        margin: 10px 0;
+        text-transform: uppercase;
+    }
+
+    .display {
+        background-color: @Variaveis.CorCinzaEscuroInput;
+    }
+
+        .display label {
+            background-color: transparent;
+        }
+</style>
+
+<MudGrid Style="padding: 30px;">
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText Color="Color.Default" Style="font-weight: 700;">Deseja realmente excluir o Cliente "@(Cliente)" permanentemente?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Class="btn-pequeno btn-vermelho">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnConfirmar" Variant="Variant.Filled" Class="btn-pequeno btn-verde">
+            Confirmar
+        </MudButton>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center align-center">
+        <MudText Color="Color.Error">@Mensagem</MudText>
+        </MudItem>
+    </MudGrid>
+
+    @code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public int CodCliente { get; set; }
+    [Parameter]
+    public string? Cliente { get; set; }
+
+    private string Categoria = string.Empty;
+    private string Mensagem = string.Empty;
+
+    private void BtnConfirmar()
+    {
+        if (CodCliente > 0)
+        {
+            var resp = _Clientes.RemoverCliente(CodCliente);
+            string mensagem = resp.Split("|")[0];
+
+            MudDialog!.Close(DialogResult.Ok(mensagem));
+        }
+        else
+        {
+            Mensagem = "ERRO! Cliente inválido, tente novamente";
+        }
+    }
+
+    private void BtnCancelar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}

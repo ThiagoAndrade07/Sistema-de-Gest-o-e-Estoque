@@ -1,0 +1,259 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = SGEServer
+build_property.RootNamespace = SGEServer
+build_property.ProjectDir = C:\Users\thiag\OneDrive\Desktop\SGE_Server\SGEServer\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\thiag\OneDrive\Desktop\SGE_Server\SGEServer
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/CadastroDeClientes/CadastroDeClientes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcQ2FkYXN0cm9EZUNsaWVudGVzXENhZGFzdHJvRGVDbGllbnRlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/CadastroDeClientes/PessoaFisica.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcQ2FkYXN0cm9EZUNsaWVudGVzXFBlc3NvYUZpc2ljYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaFisicaCadastrada/ConfirmarEdicaoModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FGaXNpY2FDYWRhc3RyYWRhXENvbmZpcm1hckVkaWNhb01vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaFisicaCadastrada/EditarPessoaFisicaCadastrada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FGaXNpY2FDYWRhc3RyYWRhXEVkaXRhclBlc3NvYUZpc2ljYUNhZGFzdHJhZGEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaFisicaCadastrada/PessoaFisicaCadastrada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FGaXNpY2FDYWRhc3RyYWRhXFBlc3NvYUZpc2ljYUNhZGFzdHJhZGEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaFisicaCadastrada/RemoverClienteFisico.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FGaXNpY2FDYWRhc3RyYWRhXFJlbW92ZXJDbGllbnRlRmlzaWNvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaJuridicaCadastrada/ConfirmarEdicaoModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FKdXJpZGljYUNhZGFzdHJhZGFcQ29uZmlybWFyRWRpY2FvTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaJuridicaCadastrada/EditarPessoaJuridica.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FKdXJpZGljYUNhZGFzdHJhZGFcRWRpdGFyUGVzc29hSnVyaWRpY2EucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaJuridicaCadastrada/PessoaJuridicaCadastrada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FKdXJpZGljYUNhZGFzdHJhZGFcUGVzc29hSnVyaWRpY2FDYWRhc3RyYWRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Clientes/PesquisaClientes/PessoaJuridicaCadastrada/RemoverClienteJuridico.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2xpZW50ZXNcUGVzcXVpc2FDbGllbnRlc1xQZXNzb2FKdXJpZGljYUNhZGFzdHJhZGFcUmVtb3ZlckNsaWVudGVKdXJpZGljby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/EditarCotacao/CancelarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xFZGl0YXJDb3RhY2FvXENhbmNlbGFyQ290YWNhby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/EditarCotacao/EditarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xFZGl0YXJDb3RhY2FvXEVkaXRhckNvdGFjYW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/EditarCotacao/EditarCotacaoBtnEditar.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xFZGl0YXJDb3RhY2FvXEVkaXRhckNvdGFjYW9CdG5FZGl0YXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/EditarCotacao/SalvarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xFZGl0YXJDb3RhY2FvXFNhbHZhckNvdGFjYW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/EditarCotacao/SalvarDadosCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xFZGl0YXJDb3RhY2FvXFNhbHZhckRhZG9zQ290YWNhby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/Montar Cotacao/CancelarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xNb250YXIgQ290YWNhb1xDYW5jZWxhckNvdGFjYW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/Montar Cotacao/Cotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xNb250YXIgQ290YWNhb1xDb3RhY2FvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/Montar Cotacao/ModalConfirmaInfoEmpresaCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xNb250YXIgQ290YWNhb1xNb2RhbENvbmZpcm1hSW5mb0VtcHJlc2FDb3RhY2FvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Cotacao/Montar Cotacao/ModalSalvarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ290YWNhb1xNb250YXIgQ290YWNhb1xNb2RhbFNhbHZhckNvdGFjYW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/DadosEmpresa/ConfirmarEdicaoDadosEmpresa.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFkb3NFbXByZXNhXENvbmZpcm1hckVkaWNhb0RhZG9zRW1wcmVzYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/DadosEmpresa/ConfirmarLimparDadosEmpresa.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFkb3NFbXByZXNhXENvbmZpcm1hckxpbXBhckRhZG9zRW1wcmVzYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/DadosEmpresa/DadosEmpresa.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFkb3NFbXByZXNhXERhZG9zRW1wcmVzYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/DadosEmpresa/RemoverDadosEmpresa.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFkb3NFbXByZXNhXFJlbW92ZXJEYWRvc0VtcHJlc2EucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Dashboard/Configuracoes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFzaGJvYXJkXENvbmZpZ3VyYWNvZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Dashboard/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFzaGJvYXJkXERhc2hib2FyZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EmpresasPrazo/EmpresasPrazo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wcmVzYXNQcmF6b1xFbXByZXNhc1ByYXpvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EmpresasPrazo/ModalAbaterValor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wcmVzYXNQcmF6b1xNb2RhbEFiYXRlclZhbG9yLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EmpresasPrazo/ProdutosEmpresaAPrazo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wcmVzYXNQcmF6b1xQcm9kdXRvc0VtcHJlc2FBUHJhem8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EmpresasPrazo/RemoverProdutoPrazo.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW1wcmVzYXNQcmF6b1xSZW1vdmVyUHJvZHV0b1ByYXpvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EntregasPendentes/EntregasPendentes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW50cmVnYXNQZW5kZW50ZXNcRW50cmVnYXNQZW5kZW50ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/EntregasPendentes/EntregasPendentesInfoCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW50cmVnYXNQZW5kZW50ZXNcRW50cmVnYXNQZW5kZW50ZXNJbmZvQ290YWNhby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Estoque/Entrada/Entrada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXN0b3F1ZVxFbnRyYWRhXEVudHJhZGEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Estoque/PesquisaEstoque/PesquisaEstoque.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXN0b3F1ZVxQZXNxdWlzYUVzdG9xdWVcUGVzcXVpc2FFc3RvcXVlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Estoque/Saida/Saida.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXN0b3F1ZVxTYWlkYVxTYWlkYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/CotacoesSalvas/BaixarCotacao.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcQ290YWNvZXNTYWx2YXNcQmFpeGFyQ290YWNhby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/CotacoesSalvas/CotacoesSalvas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcQ290YWNvZXNTYWx2YXNcQ290YWNvZXNTYWx2YXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/Historico de Movimentacoes/Entrada/EntradaMovimentacoes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcSGlzdG9yaWNvIGRlIE1vdmltZW50YWNvZXNcRW50cmFkYVxFbnRyYWRhTW92aW1lbnRhY29lcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/Historico de Movimentacoes/Saida/SaidaMovimentacoes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcSGlzdG9yaWNvIGRlIE1vdmltZW50YWNvZXNcU2FpZGFcU2FpZGFNb3ZpbWVudGFjb2VzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/OrdensCompraFinalizadas/OrdensCompraFinalizada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcT3JkZW5zQ29tcHJhRmluYWxpemFkYXNcT3JkZW5zQ29tcHJhRmluYWxpemFkYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Filtros e Relatorios/OrdensCompraFinalizadas/VizualizarItensCotacaoFinalizada.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsdHJvcyBlIFJlbGF0b3Jpb3NcT3JkZW5zQ29tcHJhRmluYWxpemFkYXNcVml6dWFsaXphckl0ZW5zQ290YWNhb0ZpbmFsaXphZGEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/ModalConfirmarCancelar.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kYWxDb25maXJtYXJDYW5jZWxhci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/OrdemDeCompra/OrdemDeCompra.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JkZW1EZUNvbXByYVxPcmRlbURlQ29tcHJhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/CadastroProdutos/AdicionarCategoria.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcQ2FkYXN0cm9Qcm9kdXRvc1xBZGljaW9uYXJDYXRlZ29yaWEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/CadastroProdutos/AdicionarUnidadeMedida.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcQ2FkYXN0cm9Qcm9kdXRvc1xBZGljaW9uYXJVbmlkYWRlTWVkaWRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/CadastroProdutos/CadastroProdutos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcQ2FkYXN0cm9Qcm9kdXRvc1xDYWRhc3Ryb1Byb2R1dG9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/CadastroProdutos/RemoverCategoria.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcQ2FkYXN0cm9Qcm9kdXRvc1xSZW1vdmVyQ2F0ZWdvcmlhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/CadastroProdutos/RemoverUnidadeMedida.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcQ2FkYXN0cm9Qcm9kdXRvc1xSZW1vdmVyVW5pZGFkZU1lZGlkYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/ProdutosCadastrados/EditarProduto.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcUHJvZHV0b3NDYWRhc3RyYWRvc1xFZGl0YXJQcm9kdXRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/ProdutosCadastrados/ProdutosCadastrados.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcUHJvZHV0b3NDYWRhc3RyYWRvc1xQcm9kdXRvc0NhZGFzdHJhZG9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Produtos/ProdutosCadastrados/RemoverProduto.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHV0b3NcUHJvZHV0b3NDYWRhc3RyYWRvc1xSZW1vdmVyUHJvZHV0by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Shared/ErroAcesso.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEVycm9BY2Vzc28ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Shared/NoLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5vTGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/thiag/OneDrive/Desktop/SGE_Server/SGEServer/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

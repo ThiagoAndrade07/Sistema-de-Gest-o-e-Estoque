@@ -1,0 +1,149 @@
+﻿@inject IDialogService DialogService
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+
+
+    .btn-grande {
+        color: @Variaveis.CorPreta;
+        width: 180px;
+        height: 60px;
+        border-radius: 40px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-pequeno {
+        color: @Variaveis.CorPreta;
+        width: 200px;
+        height: 40px;
+        border-radius: @Variaveis.BorderRadius;
+        margin: 20px 0 0 0;
+    }
+
+
+    /* ------- AZUL ------- */
+    .btn-azul {
+        background-color: #4f9ec0;
+    }
+
+        .btn-azul:hover {
+            background-color: rgba(79,158,192,0.6);
+        }
+
+    .btn-azulctive {
+        background-color: rgba(79,158,192,1);
+    }
+
+    /* ------- VERDE ------- */
+    .btn-verde {
+        background-color: #9ADE7B;
+    }
+
+        .btn-verde:hover {
+            background-color: rgba(154, 222, 123,0.6);
+        }
+
+        .btn-verde:active {
+            background-color: rgba(154, 222, 123);
+        }
+
+    /* ------- VERMELHO ------- */
+
+    .btn-vermelho {
+        background-color: #FF7878;
+    }
+
+        .btn-vermelho:hover {
+            background-color: rgba(255, 120, 120,0.6);
+        }
+
+        .btn-vermelho:active {
+            background-color: rgba(255, 120, 120,1);
+        }
+
+    /* -------- FORMULARIO DA COTAÇÃO ----------- */
+
+    .form-cotacao {
+        border: 1px solid @Variaveis.CorPreta;
+        border-radius: @Variaveis.BorderRadius;
+    }
+
+    h3 {
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 10px 0 10px 10px;
+        text-transform: uppercase;
+    }
+
+    h4 {
+        font-size: @Variaveis.FontSubTitulo;
+        margin: 10px 0;
+        text-transform: uppercase;
+    }
+
+    .display {
+        background-color: @Variaveis.CorCinzaEscuroInput;
+    }
+
+        .display label {
+            background-color: transparent;
+        }
+</style>
+
+<MudGrid Style="max-width: 600px;">
+    <MudItem xs="10"></MudItem>
+    <MudItem xs="2">
+        <MudButton Color="Color.Error" OnClick="BtnFechar" Variant="Variant.Filled">
+            X
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText Style="font-weight: 700; text-transform: uppercase;">Deseja salvar edição?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Class="btn-pequeno btn-vermelho">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnConfirmar" Variant="Variant.Filled" Class="btn-pequeno btn-verde">
+            Confirmar
+        </MudButton>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private void BtnConfirmar()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void BtnCancelar()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void BtnFechar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}
+
+
+

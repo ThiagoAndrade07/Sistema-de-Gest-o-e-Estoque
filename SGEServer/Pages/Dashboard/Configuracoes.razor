@@ -1,0 +1,17 @@
+﻿@page "/configuracoes"
+
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@layout MainLayout
+
+
+<MudItem xs="12" Class="d-flex justify-end">
+    <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BtnVoltar">Voltar</MudButton>
+</MudItem>
+
+@code {
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+}

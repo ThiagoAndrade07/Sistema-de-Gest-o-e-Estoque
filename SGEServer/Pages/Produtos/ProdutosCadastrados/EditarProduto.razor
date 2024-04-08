@@ -1,0 +1,413 @@
+﻿@page "/editarproduto/{CodProduto}"
+
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ProdutosController _Produtos
+@inject AuthenticationLogin authStateProvider
+@inject ISnackbar Snackbar
+@layout MainLayout
+@using SGEServer.Pages.Produtos.CadastroProdutos
+
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    /* cor do required caracteres */
+    .ms-auto {
+        color: #ACACAB;
+    }
+    /* cor do required text */
+    .me-auto {
+        color: #ACACAB;
+    }
+
+    .mud-icon-root.mud-svg-icon {
+        color: #fff;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 40px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+    /* cor do textfieldarea apos digitar */
+    .mud-input > textarea.mud-input-root {
+        color:#fff !important;
+    }
+
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    <h2>Editar Produto: @Referencia</h2>
+    <MudGrid>
+            <MudGrid Class="paper-style">
+                <MudItem xs="12">
+                    <MudTextField Required RequiredError="O campo Nome é obrigatório!" Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldNome" @bind-Value="Nome" Variant="Variant.Text" T="string" Label="Nome" />
+                 </MudItem>
+                 <MudItem xs=12 sm=12>
+                     <MudTextField Required RequiredError="O campo Marca é obrigatório!" Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldMarca" @bind-Value="Marca" Variant="Variant.Text" T="string" Label="Marca" />
+                 </MudItem>
+                 <MudItem xs=12 sm=12>
+                     <MudTextField Required RequiredError="O campo Ncm é obrigatório!" Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldNcm" @bind-Value="Ncm" Variant="Variant.Text" T="string" Label="NCM" />
+                 </MudItem>
+                 <MudItem xs=12 sm=12>
+                     <MudTextField Counter="200" MaxLength="200" Immediate="true" @ref="TextFieldNcm" @bind-Value="CaEpi" Variant="Variant.Text" T="string" Label="CA" />
+                 </MudItem>
+            </MudGrid>
+            <MudGrid Class="paper-style">
+                <MudItem xs=12 sm=6>
+                        <MudSelect Required RequiredError="O campo Categoria é obrigatório!" @ref="SelectFieldCategoria" @bind-Value="Categoria" T="int" Variant="Variant.Text" Label="Categoria">
+                            <MudSelectItem Value="0">Selecione</MudSelectItem>
+                                @foreach (var categoria in DropCategoria)
+                            {
+                                <MudSelectItem Value="categoria.Codigo">@categoria.Descricao</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs=12 sm=3 Class="d-flex align-center justify-center">
+                    <MudButton OnClick="BtnAddCategoria" Style="width: 100%; background-color: #4f9ec0;" Variant="Variant.Filled">Adicionar Categoria</MudButton>
+                </MudItem>
+                <MudItem xs=12 sm=3 Class="d-flex align-center justify-center">
+                    <MudButton OnClick="BtnRemoveCategoria" Style="width: 100%; background-color: #FF7878;" Variant="Variant.Filled">Remover Categoria</MudButton>
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudSelect @bind-Value="UnidadeMedida" T="int" Variant="Variant.Text" Label="Un. Medida">
+                        <MudSelectItem Value="0">Selecione</MudSelectItem>
+                        @foreach (var unidade in DropUnMedida)
+                        {
+                            <MudSelectItem Value="unidade.Codigo">@unidade.Descricao</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs=12 sm=3 Class="d-flex align-center justify-center">
+                    <MudButton OnClick="BtnAddUnMedida" Style="width: 100%; background-color: #4f9ec0;" Variant="Variant.Filled">Adicionar Un. Medida</MudButton>
+                </MudItem>
+                <MudItem xs=12 sm=3 Class="d-flex align-center justify-center">
+                    <MudButton OnClick="BtnRemoveUnMedida" Style="width: 100%; background-color: #FF7878;" Variant="Variant.Filled">Remover Un. Medida</MudButton>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Class="paper-style">
+                <MudItem xs=12 sm=6>
+                    <MudTextField Counter="50" MaxLength="50" Immediate="true" @bind-Value="Fornecedor" Variant="Variant.Text" T="string" Label="Fornecedor" />
+                </MudItem>
+                <MudItem xs=12 sm=6>
+                    <MudNumericField @bind-Value="EstoqueMinimo" Variant="Variant.Text" T="int" Label="Estoque Mínimo" />
+                </MudItem>
+                <MudItem xs="12" sm=12>
+                    <MudTextField Counter="10" MaxLength="10" Immediate="true" @bind-Value="Endereco" Variant="Variant.Text" T="string" Label="Endereço no Estoque" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Required RequiredError="O campo Descrição é obrigatório!" @ref="TextFieldDescricao" @bind-Value="Descricao" Immediate="true" Variant="Variant.Text" T="string" Label="Descrição" Lines="5" Counter="500" MaxLength="500" />
+                 </MudItem>
+            </MudGrid>
+
+         <MudItem xs="12" Class="d-flex justify-center">
+             <MudText Color="@CorMensagem">@Mensagem</MudText>
+         </MudItem>
+
+         <MudItem xs="6">
+             <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.ArrowDownward" Color="Color.Info">
+                 Fotos
+             </MudButton>
+         </MudItem>
+         <MudItem Class="d-flex justify-end" xs="6">
+             <MudButton OnClick="BtnEditar" Variant="Variant.Filled" Color="Color.Success">
+                 Editar
+             </MudButton>
+         </MudItem>
+         <MudItem xs="6"></MudItem>
+         <MudItem Class="d-flex justify-end" xs="6">
+             <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                 Cancelar
+             </MudButton>
+         </MudItem>
+     </MudGrid>
+
+ </div>
+}
+
+
+@code {
+    [Parameter]
+    public string? CodProduto { get; set; }
+
+    private bool isAuthenticated = false;
+
+    private string Referencia = string.Empty;
+    private string Nome = string.Empty;
+    private string Marca = string.Empty;
+    private string Ncm = string.Empty;
+    private string CaEpi = string.Empty;
+    private int Categoria = 0;
+    private string Fornecedor = string.Empty;
+    private int EstoqueMinimo = 0;
+    private int UnidadeMedida = 0;
+    private string Endereco = string.Empty;
+    private string Descricao = string.Empty;
+    private List<DropDownModel> DropCategoria = new List<DropDownModel>();
+    private List<DropDownModel> DropUnMedida = new List<DropDownModel>();
+
+    private string Mensagem = "";
+    private Color CorMensagem = Color.Default;
+
+    private MudTextField<string>? TextFieldNome;
+    private MudTextField<string>? TextFieldMarca;
+    private MudTextField<string>? TextFieldNcm;
+    private MudSelect<int>? SelectFieldCategoria;
+    private MudTextField<string>? TextFieldDescricao;
+
+    private ProdutosModel DadosProduto = new ProdutosModel();
+    private LoginModel Usr = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DropCategoria = _Produtos.CarregaCategorias();
+        DropUnMedida = _Produtos.CarregaUnidadesMedida();
+
+        if (!string.IsNullOrEmpty(CodProduto))
+        {
+            if (int.Parse(CodProduto) > 0)
+            {
+                DadosProduto = _Produtos.CarregaProdutoPorCod(int.Parse(CodProduto));
+            }
+        }
+
+        if (DadosProduto.Item != null)
+        {
+            Nome = DadosProduto.Item!;
+            Referencia = DadosProduto.Referencia!;
+            Marca = DadosProduto.Marca!;
+            Ncm = DadosProduto.Ncm!;
+            CaEpi = DadosProduto.CaEpi!;
+            Categoria = DadosProduto.CodCategoria!;
+            Fornecedor = DadosProduto.Fornecedor!;
+            EstoqueMinimo = DadosProduto.EstoqueMinimo!;
+            UnidadeMedida = DadosProduto.CodUnidadeMedida!;
+            Endereco = DadosProduto.Endereco!;
+            Descricao = DadosProduto.Descricao!;
+        }
+
+        StateHasChanged();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    
+    // BUTTONS
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/produtoscadastrados");
+    }
+
+    private async void BtnEditar()
+    {
+        if (await ValidarCampos())
+        {
+            DadosProduto.Item = Nome;
+            DadosProduto.Marca = Marca;
+            DadosProduto.Ncm = Ncm;
+            DadosProduto.CaEpi = CaEpi;
+            DadosProduto.CodCategoria = Categoria;
+            DadosProduto.Fornecedor = Fornecedor;
+            DadosProduto.EstoqueMinimo = EstoqueMinimo;
+            DadosProduto.CodUnidadeMedida = UnidadeMedida;
+            DadosProduto.Endereco = Endereco;
+            DadosProduto.Descricao = Descricao;
+
+
+            var resp = _Produtos.EditarProduto(DadosProduto);
+
+            Snackbar.Add(resp.Split("|")[0], Severity.Success);
+
+            BtnVoltar();
+        }
+        else
+        {
+            CorMensagem = Color.Error;
+        }
+
+        StateHasChanged();
+    }
+
+    private async void BtnAddCategoria()
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<AdicionarCategoria>("Digite a nova categoria que deseja adicionar", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+            Mensagem = resp.Split(",")[0];
+            CorMensagem = Color.Success;
+            DropCategoria = _Produtos.CarregaCategorias();
+        }
+
+        StateHasChanged();
+    }
+
+    private async void BtnRemoveCategoria()
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<RemoverCategoria>("Selecione a categoria que deseja remover", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+            Mensagem = resp.Split(",")[0];
+            DropCategoria = _Produtos.CarregaCategorias();
+            CorMensagem = Color.Success;
+        }
+
+        StateHasChanged();
+    }
+
+    private async void BtnAddUnMedida()
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<AdicionarUnidadeMedida>("Digite a nova unidade de medida que deseja adicionar", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+            Mensagem = resp.Split(",")[0];
+            CorMensagem = Color.Success;
+            DropUnMedida = _Produtos.CarregaUnidadesMedida();
+        }
+
+        StateHasChanged();
+    }
+
+    private async void BtnRemoveUnMedida()
+    {
+        var parameters = new DialogParameters();
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<RemoverUnidadeMedida>("Selecione a unidade de medida que deseja remover", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+            Mensagem = resp.Split(",")[0];
+            DropUnMedida = _Produtos.CarregaUnidadesMedida();
+            CorMensagem = Color.Success;
+        }
+
+        StateHasChanged();
+    }
+
+    // FUNÇÕES
+
+    private async void LimparTela()
+    {
+        Nome = string.Empty;
+        Marca = string.Empty;
+        Ncm = string.Empty;
+        CaEpi = string.Empty;
+        Categoria = 0;
+        Fornecedor = string.Empty;
+        EstoqueMinimo = 0;
+        UnidadeMedida = 0;
+        Endereco = string.Empty;
+        Descricao = string.Empty;
+
+        Mensagem = "";
+        CorMensagem = Color.Default;
+
+        await TextFieldNome!.FocusAsync();
+
+        StateHasChanged();
+    }
+
+    private async Task<bool> ValidarCampos()
+    {
+        if (string.IsNullOrEmpty(Nome))
+        {
+            Mensagem = "ERRO! Preencha o campo Nome e tente novamente";
+            await TextFieldNome!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Marca))
+        {
+            Mensagem = "ERRO! Preencha o campo Marca e tente novamente";
+            await TextFieldMarca!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Ncm))
+        {
+            Mensagem = "ERRO! Preencha o campo Ncm e tente novamente";
+            await TextFieldNcm!.FocusAsync();
+            return false;
+        }
+
+        if (Categoria <= 0)
+        {
+            Mensagem = "ERRO! Selecione uma categoria válida e tente novamente";
+            await SelectFieldCategoria!.FocusAsync();
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(Descricao))
+        {
+            Mensagem = "ERRO! Preencha o campo Descrição e tente novamente";
+            await TextFieldDescricao!.FocusAsync();
+            return false;
+        }
+
+        return true;
+    }
+}

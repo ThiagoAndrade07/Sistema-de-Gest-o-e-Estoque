@@ -1,0 +1,87 @@
+﻿@inject GeralController _Geral
+
+<style>
+     /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        display:none;
+    }
+</style>
+
+<MudGrid Class="paper-style" Style="margin-bottom:0px !important;padding:50px 30px !important;">
+    <MudItem xs="12">
+        <MudText Style="color:#fff;
+                        text-align:center;
+                        text-transform:uppercase;
+                        font-weight:900;"
+        > Digite a nova categoria que deseja adicionar</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudTextField Counter="50" MaxLength="50" @bind-Value="Categoria" Variant="Variant.Text" T="string" Label="Nova Categoria" />
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Color="Color.Error">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCadastrar" Variant="Variant.Filled" Color="Color.Success">
+            Cadastrar
+        </MudButton>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center align-center">
+        <MudText Color="Color.Error">@Mensagem</MudText>
+    </MudItem>
+</MudGrid>
+
+    @code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private string Categoria = string.Empty;
+    private string Mensagem = string.Empty;
+
+    private void BtnCadastrar()
+    {
+        if (!string.IsNullOrEmpty(Categoria))
+        {
+            var resp = _Geral.CadastrarCategoria(Categoria);
+            string mensagem = resp.Split("|")[0];
+
+            MudDialog!.Close(DialogResult.Ok(mensagem));
+        }
+        else
+        {
+            Mensagem = "ERRO! Favor inserir uma categoria para realizar o cadastro";
+        }
+    }
+    
+    private void BtnCancelar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}

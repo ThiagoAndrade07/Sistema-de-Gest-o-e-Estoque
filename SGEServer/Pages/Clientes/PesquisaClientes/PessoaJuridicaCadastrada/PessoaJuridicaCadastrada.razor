@@ -1,0 +1,190 @@
+﻿@page "/pessoajuridicacadastrada"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject ClientesController _Clientes
+@inject IDialogService DialogService
+@layout MainLayout
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 40px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    <h2>Clientes Cadastrados</h2>
+        <MudGrid Class="paper-style">
+            <MudItem xs="12">
+                <MudText Class="sub-text">Filtros</MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudTextField Variant="Variant.Text" T="string" Label="Nome" />
+            </MudItem>
+
+        <MudItem xs="12">
+            <MudTable Items="listClientes" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Breakpoint="Breakpoint.None">
+                <ToolBarContent>
+                    <MudText Style="font-weight: 700;">@listClientes.Count() Clientes Encontrados</MudText>
+                </ToolBarContent>
+                <ColGroup>
+                    <col />
+                    <col />
+                    <col style="width: 240px;" />
+                    <col style="width: 60px;" />
+                    <col style="width: 60px;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Nome Fantasia</MudTh>
+                    <MudTh>Razao Social</MudTh>
+                    <MudTh>CNPJ</MudTh>
+                    <MudTh></MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nome Fantasia">@context.NomeFantasia</MudTd>
+                    <MudTd DataLabel="Razao Social">@context.RazaoSocial</MudTd>
+                    <MudTd DataLabel="CNPJ">@context.Cnpj</MudTd>
+                    <MudTd>
+                                <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => BtnEditar(context))" />
+                    </MudTd>
+                    <MudTd>
+                                <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.DeleteForever" OnClick="@(() => BtnRemover(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                </PagerContent>
+                <NoRecordsContent>
+                    <MudText Color="Color.Error">Não foi encontrado nenhum cliente :\</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Carregando...</MudText>
+                </LoadingContent>
+            </MudTable>
+        </MudItem>
+
+            <MudItem Class="d-flex justify-start align-center" xs="4">
+                <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                    Voltar
+                </MudButton>
+            </MudItem>
+            <MudItem xs="8"></MudItem>
+
+
+        </MudGrid>
+
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<ClientesModel> listClientes = new List<ClientesModel>();
+    private LoginModel Usr = new();
+    private string Mensagem = "";
+    private Color CorMensagem = Color.Default;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+                listClientes = CarregaTabelaClientes();
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private List<ClientesModel> CarregaTabelaClientes()
+    {
+        var resp = _Clientes.CarregaClientesJuridicosCadastrados(Usr.CodEmpresa);
+
+        return resp;
+    }
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo($"/pesquisaclientes");
+    }
+
+    private void BtnEditar(ClientesModel clientes)
+    {
+        Navigation.NavigateTo($"/editarpessoajuridica/{clientes.CodCliente}");
+    }
+
+    private async void BtnRemover(ClientesModel cliente)
+    {
+        var parameters = new DialogParameters()
+            {
+                ["CodCliente"] = cliente.CodCliente
+            };
+
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<RemoverClienteJuridico>("", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+            Mensagem = resp;
+            CorMensagem = Color.Success;
+            listClientes = CarregaTabelaClientes();
+        }
+
+        StateHasChanged();
+    }
+
+
+}
+
+   

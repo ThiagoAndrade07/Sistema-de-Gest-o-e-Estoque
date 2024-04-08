@@ -1,0 +1,464 @@
+﻿@page "/baixarcotacao/{NumCotacao}/{NomeFantasia}/{Cnpj}/{PrazoEntregaRetornado:int}/{FaturamentoRetornado:int}/{CodCotacao:int}"
+
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject AuthenticationLogin authStateProvider
+@inject ProdutosController _Produtos
+@inject ClientesController _Clientes
+@inject CotacaoController _Cotacao
+@inject ISnackbar Snackbar
+
+@using SGEServer.Pages.Cotacao
+
+@using System.Data;
+@using iTextSharp.text;
+@using iTextSharp.text.pdf;
+@using System;
+@using System.IO;
+
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+
+
+    .btn-grande {
+        color: @Variaveis.CorPreta;
+        width: 180px;
+        height: 60px;
+        border-radius: 40px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-pequeno {
+        color: @Variaveis.CorPreta;
+        width: 200px;
+        height: 40px;
+        border-radius: @Variaveis.BorderRadius;
+        margin: 20px 0 0 0;
+    }
+
+
+    /* ------- AZUL ------- */
+    .btn-azul {
+        background-color: #4f9ec0;
+    }
+
+        .btn-azul:hover {
+            background-color: rgba(79,158,192,0.6);
+        }
+
+    .btn-azulctive {
+        background-color: rgba(79,158,192,1);
+    }
+
+    /* ------- VERDE ------- */
+    .btn-verde {
+        background-color: #9ADE7B;
+    }
+
+        .btn-verde:hover {
+            background-color: rgba(154, 222, 123,0.6);
+        }
+
+        .btn-verde:active {
+            background-color: rgba(154, 222, 123);
+        }
+
+    /* ------- VERMELHO ------- */
+
+    .btn-vermelho {
+        background-color: #FF7878;
+    }
+
+        .btn-vermelho:hover {
+            background-color: rgba(255, 120, 120,0.6);
+        }
+
+        .btn-vermelho:active {
+            background-color: rgba(255, 120, 120,1);
+        }
+
+    /* -------- FORMULARIO DA COTAÇÃO ----------- */
+
+    .form-cotacao {
+        border: 1px solid @Variaveis.CorPreta;
+        border-radius: @Variaveis.BorderRadius;
+    }
+
+    h3 {
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 10px 0 10px 10px;
+        text-transform: uppercase;
+    }
+
+    h4 {
+        font-size: @Variaveis.FontSubTitulo;
+        margin: 10px 0;
+        text-transform: uppercase;
+    }
+
+    .display {
+        background-color: @Variaveis.CorCinzaEscuroInput;
+    }
+
+    .display label {
+        background-color: transparent;
+    }
+</style>
+
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+        <h2>Cotação</h2>
+        <MudGrid>
+             <MudItem Class="form-cotacao" xs="8">
+                 <MudGrid>
+                     <MudItem xs="4">
+                         <h3>Detalhes</h3>
+                     </MudItem>
+                     <MudItem xs="4"></MudItem>
+                     <MudItem xs="4">
+                         <MudTextField @bind-Value="NumCotacao" ReadOnly Variant="Variant.Filled" T="string" Label="N. da cotação" />
+                     </MudItem>
+                     <MudItem xs="4">
+                         <MudTextField @bind-Value="NomeFantasia" ReadOnly Variant="Variant.Filled" T="string" Label="Nome Fantasia" />
+                     </MudItem>
+                     <MudItem xs="4">
+                         <MudTextField @bind-Value="Cnpj" ReadOnly Variant="Variant.Filled" T="string" Label="CNPJ" />
+                     </MudItem>
+
+                     <MudItem xs="12">
+                         <MudTable Items="listProdutos" FixedFooter="true" Height="350px" Hover="true" Breakpoint="Breakpoint.None">
+                             <ColGroup>
+                                 <col style="width: 120px;" />
+                                 <col />
+                                 <col style="width: 60px;" />
+                                 <col />
+                                 <col />
+                                 <col style="width: 120px;" />
+                                 <col style="width: 120px;" />
+                                 <col style="width: 60px;" />
+                             </ColGroup>
+                             <HeaderContent>
+                                 <MudTh>Qtde</MudTh>
+                                 <MudTh>Item</MudTh>
+                                 <MudTh>Un. Medida</MudTh>
+                                 <MudTh>NCM</MudTh>
+                                 <MudTh>CA</MudTh>
+                                 <MudTh>Valor Un.</MudTh>
+                                 <MudTh>Valor Total</MudTh>
+                                 <MudTh></MudTh>
+                             </HeaderContent>
+                             <RowTemplate>
+                                 <MudTd DataLabel="Qtde">@context.QtdeItens</MudTd>
+                                    <MudTd DataLabel="Item">@context.Item</MudTd>
+                                    <MudTd DataLabel="Un. Medida">@context.UnidadeMedida</MudTd>
+                                    <MudTd DataLabel="NCM">@context.Ncm</MudTd>
+                                    <MudTd DataLabel="CA">@context.CaEpi</MudTd>
+                                    <MudTd DataLabel="Valor Un.">R$ @context.ValorUnitario.ToString("F2")</MudTd>
+                                    <MudTd DataLabel="Valor Total">R$ @context.ValorTotalProduto.ToString("F2")</MudTd>
+                                </RowTemplate>
+                                <FooterContent>
+                                    <MudTh Style="font-weight: 700; text-align: end; font-size: 20px;"
+                                           Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer"
+                                           colspan="6">
+                                        VALOR TOTAL: R$ @ValorTotalCotacao.ToString("F2")
+                                </MudTh>
+                            </FooterContent>
+                            <PagerContent>
+                                <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                            </PagerContent>
+                            <NoRecordsContent>
+                                <MudText Color="Color.Error">Nenhum item adicionado ainda...</MudText>
+                            </NoRecordsContent>
+                            <LoadingContent>
+                                <MudText>Carregando...</MudText>
+                            </LoadingContent>
+                        </MudTable>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    [Parameter]
+    public string NumCotacao { get; set; }
+
+    [Parameter]
+    public string NomeFantasia { get; set; }
+
+    [Parameter]
+    public string Cnpj { get; set; }
+    [Parameter]
+    public int CodCotacao { get; set; }
+
+    [Parameter]
+    public int PrazoEntregaRetornado { get; set; }
+
+    [Parameter]
+    public int FaturamentoRetornado { get; set; }
+
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+    private List<ClientesModel> listSearchClientes = new List<ClientesModel>();
+    private List<ProdutosModel> listSearch = new List<ProdutosModel>();
+    private ClientesModel selectedCliente = new ClientesModel();
+    private ProdutosModel selectedProduto = new ProdutosModel();
+    private CotacaoModel DadosCotacao = new CotacaoModel();
+    private decimal ValorTotalProduto = 0m;
+    private int autocompleteKey = 0;
+    private decimal valorVenda;
+    private decimal valorCompra;
+    private string ErroMensagemCliente = "";
+    private string ErroMensagemProduto = "";
+    private bool isClienteSelectedValid = true;
+    private bool isProdutoSelectedValid = true;
+    private string Item = string.Empty;
+    private string UnidadeMedida = string.Empty;
+    private string Ncm = string.Empty;
+    private string CaEpi = string.Empty;
+    private int Quantidade = 0;
+    private string valorUnitarioErrorMessage = "";
+    private string mensagemErroProduto = "";
+    private string mensagemErroCliente = "";
+    private string mensagemErroQuantidade = "";
+    private string mensagemErroValorUnitario = "";
+    private string mensagemErroSelecaoEmpresa = "";
+    private decimal ValorUnitario = 0;
+    private bool isItemFocused = false;
+    private string mensagemItemDuplicado = string.Empty;
+    private string mensagemErroItem = string.Empty;
+    private string mensagemErro = string.Empty;
+
+
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+        if (isAuthenticated && !string.IsNullOrEmpty(NumCotacao))
+        {
+            listProdutos = _Cotacao.CarregarItensCotacao(CodCotacao, Usr.CodEmpresa);
+        }
+        
+        await base.OnInitializedAsync();
+
+        GerarPDF();
+        Snackbar.Add("SUCESSO! Download realizado para pasta Cotações na Area de Trabalho", Severity.Success);
+        Navigation.NavigateTo("/cotacoessalvas");
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && isAuthenticated)
+        {
+            listSearchClientes = _Clientes.CarregaClientesCadastrados(Usr.CodEmpresa);
+            listSearch = _Produtos.CarregaProdutosCadastrados(Usr.CodEmpresa, "");
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private decimal ValorTotalCotacao
+    {
+        get
+        {
+            return listProdutos.Sum(p => p.ValorTotalProduto);
+        }
+    }
+
+
+    private async Task<IEnumerable<ProdutosModel>> SearchItem(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return new List<ProdutosModel>();
+
+        return listSearch.Where(x => x.Item!.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ProdutosController>();
+    }
+
+    private async void OnClienteSelected(ClientesModel newValue)
+    {
+        selectedCliente = newValue ?? new ClientesModel();
+
+        if (selectedCliente != null && selectedCliente.CodCliente > 0)
+        {
+            mensagemErroCliente = string.Empty;
+            mensagemErroSelecaoEmpresa = string.Empty;
+        }
+        else
+        {
+            mensagemErroCliente = "Este campo é obrigatório para cotação ";
+        }
+
+        StateHasChanged();
+    }
+
+
+    private void AdicionarParagrafoSeExistir(string texto, float xPos, float yPos, PdfWriter writer, Font fonte)
+    {
+        if (!string.IsNullOrEmpty(texto))
+        {
+            PdfContentByte canvas = writer.DirectContent;
+            Phrase phrase = new Phrase(texto, fonte);
+            ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT, phrase, xPos, yPos, 0);
+        }
+    }
+
+    private void GerarPDF()
+    {
+        Document document = new Document(PageSize.A4);
+
+        // Caminho para a pasta na área de trabalho
+        string caminhoDaAreaDeTrabalho = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        string pastaCotacoes = Path.Combine(caminhoDaAreaDeTrabalho, "Cotações");
+
+        // Verifica e cria a pasta "Cotações", se necessário
+        if (!Directory.Exists(pastaCotacoes))
+        {
+            Directory.CreateDirectory(pastaCotacoes);
+        }
+
+        // Nome da empresa para a pasta
+        string nomeEmpresa = NomeFantasia ?? "EmpresaDesconhecida"; // Substitua conforme sua lógica para obter o nome da empresa
+        string diretorioEmpresa = Path.Combine(pastaCotacoes, nomeEmpresa);
+
+        // Verifica e cria o diretório da empresa, se necessário
+        if (!Directory.Exists(diretorioEmpresa))
+        {
+            Directory.CreateDirectory(diretorioEmpresa);
+        }
+
+        string nomeArquivo = $"{NumCotacao}_{nomeEmpresa}.pdf";
+        string path = Path.Combine(diretorioEmpresa, nomeArquivo);
+
+        // Prepara o documento PDF para a escrita
+        PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(path, FileMode.Create));
+
+        document.Open();
+
+        // Adicionar o logo no topo esquerdo
+        byte[] logoBytes = _Clientes.PuxaLogoEmpresa(Usr.CodEmpresa);
+        if (logoBytes != null)
+        {
+            Image logo = Image.GetInstance(logoBytes);
+            logo.SetAbsolutePosition(document.Left, document.Top - 70); // Ajuste a posição conforme necessário
+            logo.ScaleToFit(140, 100); // Ajuste o tamanho conforme necessário
+            document.Add(logo);
+        }
+
+        // Adicionar o número da cotação no topo
+        Font fonteNumeroCotacao = FontFactory.GetFont("Arial", 12, Font.BOLD);
+        Phrase fraseNumeroCotacao = new Phrase("N. COTAÇÃO: " + NumCotacao, fonteNumeroCotacao);
+        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_RIGHT, fraseNumeroCotacao, document.Right - 36, document.Top - 25, 0); // Ajuste a posição conforme necessário
+
+        // Espaçamento após o cabeçalho
+        document.Add(new Paragraph(new Chunk(" ", fonteNumeroCotacao)));
+
+        // Adicionar informações da empresa
+        DataRow dadosEmpresa = _Clientes.PuxaDadosEmpresa(Usr.CodEmpresa);
+        if (dadosEmpresa != null)
+        {
+            Font fonteInformacoes = FontFactory.GetFont("Arial", 10, Font.NORMAL);
+            float yPos = document.Top - 95; // Ajuste essa posição Y conforme necessário
+
+            AdicionarParagrafoSeExistir("Razão Social: " + dadosEmpresa["RazaoSocial"].ToString(), document.Left, yPos, writer, fonteInformacoes);
+            AdicionarParagrafoSeExistir("Cnpj: " + dadosEmpresa["Cnpj"].ToString(), document.Left, yPos -= 15, writer, fonteInformacoes);
+            AdicionarParagrafoSeExistir("Endereço: " + dadosEmpresa["Endereco"].ToString(), document.Left, yPos -= 15, writer, fonteInformacoes);
+            AdicionarParagrafoSeExistir("Cidade: " + dadosEmpresa["Cidade"].ToString(), document.Left, yPos -= 15, writer, fonteInformacoes);
+            AdicionarParagrafoSeExistir("CEP: " + dadosEmpresa["Cep"].ToString(), document.Left, yPos -= 15, writer, fonteInformacoes);
+            AdicionarParagrafoSeExistir("Telefone: " + dadosEmpresa["Telefone"].ToString(), document.Left, yPos -= 15, writer, fonteInformacoes);
+        }
+
+        // Espaçamento entre dados da empresa e a tabela
+        Paragraph espaco = new Paragraph(" ", fonteNumeroCotacao);
+        espaco.SpacingBefore = 140f; // Ajuste o valor conforme necessário
+        document.Add(espaco);
+
+
+        // Adiciona os dados da tabela
+        PdfPTable table = new PdfPTable(7); // Número de colunas
+        table.WidthPercentage = 100; // Faz a tabela ocupar 100% da largura do documento
+
+        // Cabeçalhos da tabela
+        table.AddCell("Qtde");
+        table.AddCell("Item");
+        table.AddCell("Un.Medida");
+        table.AddCell("NCM");
+        table.AddCell("CA");
+        table.AddCell("Valor Un.");
+        table.AddCell("Valor Total");
+
+        // Adiciona dados
+        foreach (var item in listProdutos)
+        {
+            table.AddCell(item.QtdeItens.ToString());
+            table.AddCell(item.Item);
+            table.AddCell(item.UnidadeMedida);
+            table.AddCell(item.Ncm);
+            table.AddCell(item.CaEpi);
+            table.AddCell(item.ValorUnitario.ToString("F2"));
+            table.AddCell(item.ValorTotalProduto.ToString("F2"));
+        }
+
+        document.Add(table);
+
+        DateTime DataCriacao = DateTime.Now;
+        string mesExtenso = DataCriacao.ToString("MMMM", new CultureInfo("pt-BR"));
+        string dataFormatada = $"{DataCriacao.Day} de {mesExtenso} de {DataCriacao.Year}";
+
+        string cidade = dadosEmpresa["Cidade"].ToString();
+
+        string dataECidade = $"{cidade}, {dataFormatada}";
+
+        // Adicionar o número Valor Total Cotação
+        Font ValorTotalCotacaoPdf = FontFactory.GetFont("Arial", 12, Font.BOLD);
+        Phrase ValorTotalCotacaoPdfFrase = new Phrase("Valor Total Cotação: R$ " + ValorTotalCotacao.ToString("F2"), ValorTotalCotacaoPdf);
+        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_RIGHT, ValorTotalCotacaoPdfFrase, document.Right - 36, document.Bottom + 45, 0); // Ajuste a posição conforme necessário
+
+        // Adicionar o número do Prazo De Entrega
+        Font PrazoEmtrega = FontFactory.GetFont("Arial", 12, Font.BOLD);
+        Phrase PrazoEmtregaFrase = new Phrase("Prazo de Entrega: " + PrazoEntregaRetornado, PrazoEmtrega);
+        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_LEFT, PrazoEmtregaFrase, document.Left + 36, document.Bottom + 45, 0); // Ajuste a posição conforme necessário
+
+        // Adicionar o número de faturamento
+        Font Faturamento = FontFactory.GetFont("Arial", 12, Font.BOLD);
+        Phrase FaturamentoFrase = new Phrase("Faturamento: " + FaturamentoRetornado, Faturamento);
+        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_LEFT, FaturamentoFrase, document.Left + 36, document.Bottom + 25, 0); // Ajuste a posição conforme necessário
+
+        // Adicionar o dia de criação da cotação
+        Font fonteData = FontFactory.GetFont("Arial", 12, Font.BOLD);
+        Phrase fraseData = new Phrase(dataECidade, fonteData);
+        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_LEFT, fraseData, document.Left + 36, document.Bottom + 5, 0);
+
+        // Fecha o documento
+        document.Close();
+    }
+}

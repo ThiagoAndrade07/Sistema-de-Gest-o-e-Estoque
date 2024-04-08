@@ -1,0 +1,470 @@
+﻿@page "/entrada"
+
+@inject NavigationManager Navigation
+@inject ProdutosController _Produtos
+@inject AuthenticationLogin authStateProvider
+@inject ISnackbar Snackbar
+@layout MainLayout
+
+<style>
+    /* cor dos label */
+    .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+        color: #fff;
+    }
+    /* cor do required caracteres */
+    .ms-auto {
+        color: #fff;
+    }
+    /* cor do required text */
+    .me-auto {
+        color: #fff;
+    }
+    /* cor do label mudSelect */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff;
+    }
+    /* cor das opcoes do mudSelect */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    /* cor do button do mud select */
+    .mud-icon-root.mud-svg-icon {
+        color: #fff;
+    }
+    /* cor texto do textarea */
+    .mud-input > textarea.mud-input-root {
+        color: #fff !important;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+        background-color: #063862;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+        <h2>Entrada</h2>
+        <MudGrid Class="paper-style">
+            <MudItem xs="12" sm="6">
+                <MudAutocomplete T="ProdutosModel"
+                                 @ref="AutoCompleteItem"
+                                 Value="selectedProduto"
+                                 ValueChanged="OnItemSelected"
+                                 ToStringFunc="@((item) => item != null ? item.Item : string.Empty)"
+                                 SearchFunc="@SearchItem"
+                                 Label="Item"
+                                 ResetValueOnEmptyText="true"
+                                 CoerceText="true" CoerceValue="false"
+                                 Variant="Variant.Text"
+                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                 AdornmentColor="Color.Primary" />
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <MudText Color="Color.Error">@errorMessage</MudText>
+                }
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField ReadOnly Variant="Variant.Filled"
+                               Value="@(selectedProduto?.CodProduto.ToString())"
+                               T="string"
+                               Label="Cod do Produto" />
+
+             </MudItem>
+             <MudItem xs="12" sm="6">
+                 <MudTextField Value="@Quantidade.ToString()"
+                               ValueChanged="@(e => OnQuantidadeChanged(e.ToString()))"
+                               OnBlur="OnBlurQuantidade"
+                               Required RequiredError="O campo Quantidade é obrigatório!"
+                               Variant="Variant.Text"
+                               T="string"
+                               Label="Quantidade" />
+                 @if (!string.IsNullOrWhiteSpace(quantidadeErrorMessage))
+                {
+                    <MudText Color="Color.Error">@quantidadeErrorMessage</MudText>
+                }
+            </MudItem>
+
+             <MudItem xs="12" sm="6">
+                 <MudTextField ReadOnly
+                               Variant="Variant.Filled"
+                               Value="@(selectedProduto?.Referencia)"
+                               T="string"
+                               Label="Referencia" />
+             </MudItem>
+
+             <MudItem xs="12" sm="6">
+                 <MudTextField Value="@ValorTotalComprado.ToString()"
+                               ValueChanged="@(e => OnValorTotalCompraChanged(e.ToString()))"
+                               OnBlur="OnBlurValorTotalComprado"
+                                    Required RequiredError="O campo Valor Total de Compra é obrigatório!"
+                               Variant="Variant.Text"
+                               T="string"
+                               Label="Valor Total de Compra"
+                               Format="F2" />
+                 @if (!string.IsNullOrWhiteSpace(valorTotalCompradoErrorMessage))
+                {
+                    <MudText Color="Color.Error">@valorTotalCompradoErrorMessage</MudText>
+                }
+            </MudItem>
+
+             <MudItem xs="12" sm="6">
+                 <MudTextField ReadOnly
+                               Variant="Variant.Filled"
+                               Value="@(selectedProduto?.EnderecoEstoque)"
+                               T="string"
+                               Label="Endereço do Estoque" />
+             </MudItem>
+             <MudItem Class="icms" xs="6">
+                 <MudTextField Value="@Icms" ValueChanged="@(e => OnIcmsChanged(e.ToString()))" Variant="Variant.Text" T="decimal" Label="ICMS " />
+             </MudItem>
+             <MudItem xs="12" sm="6">
+                 <MudTextField @bind-Value="ValorUnitarioComprado" ReadOnly Variant="Variant.Filled" T="decimal" Label="Valor Un. de Compra" Format="F2" />
+             </MudItem>
+             <MudItem xs="6">
+                 <MudTextField Value="@Ipi" ValueChanged="@(e => OnIpiChanged(e.ToString()))" Variant="Variant.Text" T="decimal" Label="IPI " />
+             </MudItem>
+             <MudItem xs="12" sm="6">
+                 <MudTextField @bind-Value="TipoMovimentacao" ReadOnly Variant="Variant.Filled" T="string" Label="Tipo de Movimentação">Entrada</MudTextField>
+             </MudItem>
+             <MudItem xs="6"></MudItem>
+             <MudItem xs="12"></MudItem>
+             <MudItem xs="12">
+                 <MudGrid Class="paper-style">
+                     <MudItem xs="12">
+                        <h4 style="text-transform:uppercase;
+                                margin-bottom:15px;
+                                color:#fff;">
+                            Valor de Entrada
+                        </h4>
+                     </MudItem>
+                         <MudItem xs="6">
+                             <MudTextField Value="@LucroVenda.ToString()" ValueChanged="@(e => OnLucroVendaChanged(e.ToString()))" Variant="Variant.Text" T="string" Label="% de venda" />
+                         </MudItem>
+                         <MudItem xs="6">
+                             <MudTextField @bind-Value="ValorTotal" ReadOnly Variant="Variant.Filled" T="decimal" Label="Valor Final" Format="F2" />
+                         </MudItem>
+                  </MudGrid>
+             </MudItem>
+             <MudItem xs="0" md="8">
+
+             </MudItem>
+             <MudGrid Class="d-flex" Style="padding:0px 10px;">
+                    <MudItem xs="3">
+                        <MudButton Color="Color.Info" Variant="Variant.Filled" OnClick="BtnLimpar">Limpar</MudButton>
+                    </MudItem>
+                    <MudItem xs="5"></MudItem>
+                    <MudItem xs="4" Class="d-flex justify-end">
+                        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="BtnVoltar">Voltar</MudButton>
+                        <MudButton Class="ml-4" Color="Color.Success" Variant="Variant.Filled" OnClick="BtnEntrada">Entrada</MudButton>
+                    </MudItem>
+                    
+             </MudGrid>
+         </MudGrid>
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private List<ProdutosModel> listSearch = new List<ProdutosModel>();
+    private ProdutosModel selectedProduto = new ProdutosModel();
+    private decimal ValorTotalComprado = 0;
+    private int autocompleteKey = 0;
+    private decimal Icms = 0;
+    private decimal Ipi = 0;
+    private int LucroVenda = 0;
+    private decimal ValorTotal = 0m;
+    private int Quantidade = 0;
+    private decimal ValorUnitarioComprado = 0;
+    private string Nome = string.Empty;
+    private string TipoMovimentacao = "Entrada";
+    private string errorMessage = "";
+    private string Mensagem = "";
+    private Color CorMensagem = Color.Default;
+    private MudAutocomplete<ProdutosModel>? AutoCompleteItem;
+    private string quantidadeErrorMessage = "";
+    private string valorTotalCompradoErrorMessage = "";
+    private bool isTotalCompraValid = true;
+    private bool isQuantidadeValid = true;
+    private bool isProdutoSelectedValid = true;
+
+
+    private LoginModel Usr = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+                listSearch = _Produtos.CarregaProdutosCadastrados(Usr.CodEmpresa, "");
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    private async Task<IEnumerable<ProdutosModel>> SearchItem(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return new List<ProdutosModel>();
+
+        return listSearch.Where(x => x.Item!.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+    }
+
+    private void OnItemSelected(ProdutosModel newValue)
+    {
+        selectedProduto = newValue ?? new ProdutosModel();
+        ValidaSelectedProduto();
+    }
+
+    private void OnBlurValorTotalComprado()
+    {
+        if (!decimal.TryParse(ValorTotalComprado.ToString(), out decimal valor) || valor <= 0)
+        {
+            valorTotalCompradoErrorMessage = "Valor Total de Compra deve ser maior que zero.";
+            isTotalCompraValid = false;
+        }
+        else
+        {
+            valorTotalCompradoErrorMessage = "";
+            isTotalCompraValid = true;
+        }
+    }
+
+    private void OnBlurQuantidade()
+    {
+        if (Quantidade <= 0)
+        {
+            quantidadeErrorMessage = "Quantidade deve ser maior que zero.";
+            isQuantidadeValid = false;
+        }
+        else
+        {
+            quantidadeErrorMessage = "";
+            isQuantidadeValid = true;
+        }
+    }
+
+    private void ValidaSelectedProduto()
+    {
+        if (selectedProduto == null || string.IsNullOrWhiteSpace(selectedProduto.Item))
+        {
+            errorMessage = "Este campo é obrigatório.";
+            isProdutoSelectedValid = false;
+        }
+        else
+        {
+            errorMessage = "";
+            isProdutoSelectedValid = true;
+        }
+    }
+
+    private void BtnEntrada()
+    {
+        bool isValid = true;
+
+        if (selectedProduto == null || string.IsNullOrWhiteSpace(selectedProduto.Item))
+        {
+            errorMessage = "Este campo é obrigatório.";
+            isValid = false;
+        }
+        else
+        {
+            errorMessage = "";
+        }
+
+        if (Quantidade <= 0)
+        {
+            quantidadeErrorMessage = "Quantidade deve ser maior que zero.";
+            isValid = false;
+        }
+        else
+        {
+            quantidadeErrorMessage = "";
+        }
+
+        if (!decimal.TryParse(ValorTotalComprado.ToString(), out decimal valor) || valor <= 0)
+        {
+            valorTotalCompradoErrorMessage = "Valor Total de Compra deve ser maior que zero.";
+            isValid = false;
+        }
+        else
+        {
+            valorTotalCompradoErrorMessage = "";
+        }
+
+        if (isValid)
+        {
+            try
+            {
+                int codProduto = selectedProduto.CodProduto;
+                string Item = selectedProduto.Item;
+
+                string resp = _Produtos.RealizarEntradaEstoque(codProduto, Item, ValorUnitarioComprado, Quantidade, LucroVenda, ValorTotal, Icms, Ipi, Usr.CodEmpresa);
+
+                BtnLimpar();
+
+                Snackbar.Add("SUCESSO! " + resp.Split("|")[0], Severity.Success);
+                BtnVoltar();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add("ERRO! Ocorreu um problema ao dar entrada no Produto: " + ex.Message, Severity.Error);
+            }
+            
+        }
+
+        StateHasChanged();
+    }
+
+
+
+    // CALCULAR IMPOSTOS
+
+    private void OnIcmsChanged(string value)
+    {
+        if (int.TryParse(value, out int result))
+        {
+            Icms = result;
+        }
+        else
+        {
+            Icms = 0;
+        }
+
+        CalcularValorTotal();
+    }
+
+    private void OnIpiChanged(string value)
+    {
+        if (int.TryParse(value, out int result))
+        {
+            Ipi = result;
+        }
+        else
+        {
+            Ipi = 0;
+        }
+
+        CalcularValorTotal();
+    }
+
+    private void OnLucroVendaChanged(string value)
+    {
+        if (int.TryParse(value, out int result))
+        {
+            LucroVenda = result;
+        }
+        else
+        {
+            LucroVenda = 0;
+        }
+
+        CalcularValorTotal();
+    }
+
+    private void OnValorTotalCompraChanged(string value)
+    {
+        if (int.TryParse(value, out int result))
+        {
+            ValorTotalComprado = result;
+        }
+        else
+        {
+            ValorTotalComprado = 0;
+        }
+
+        CalcularValorTotal();
+    }
+
+    private void OnQuantidadeChanged(string value)
+    {
+        if (int.TryParse(value, out int result))
+        {
+            Quantidade = result;
+        }
+        else
+        {
+            Quantidade = 0;
+        }
+
+        CalcularValorTotal();
+    }
+
+    private void CalcularValorTotal()
+    {
+        // Convertendo a porcentagem de lucro para uma fração decimal
+        decimal fatorLucroVenda = 1 + (LucroVenda / 100m);
+
+
+
+        decimal totalImpostos = 0;
+
+        if (Quantidade > 0)
+        {
+            // Calculando o total de impostos
+            totalImpostos = (Icms + Ipi + ValorTotalComprado) / Quantidade;
+        }
+
+
+        // Calculando o valor final baseado apenas nos impostos e na margem de lucro
+        ValorTotal = totalImpostos * fatorLucroVenda;
+
+        ValorUnitarioComprado = totalImpostos;
+
+        StateHasChanged();
+
+        // ValorTotal + Ipi + Icms/ Quantidade = Valor Produto
+        // Valor Produto + % de lucro = valor final
+
+    }
+
+    private void BtnLimpar()
+    {
+        selectedProduto = null;
+        autocompleteKey++;
+        ValorTotalComprado = 0;
+        autocompleteKey++;
+        Icms = 0;
+        Ipi = 0;
+        LucroVenda = 0;
+        ValorTotal = 0;
+        Quantidade = 0;
+        ValorUnitarioComprado = 0;
+
+        StateHasChanged();
+    }
+}

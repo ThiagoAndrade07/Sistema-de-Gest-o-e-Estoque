@@ -1,0 +1,296 @@
+﻿@page "/produtosempresaaprazo/{CodCliente:int}/{NomeFantasia}/{Cnpj}"
+
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject ClientesController _Clientes
+@inject ProdutosController _Produtos
+@inject ISnackbar Snackbar
+@layout MainLayout
+
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 40px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .no-wrap {
+        white-space:nowrap;
+    }
+    
+    .produto-entregue {
+        background-color: #9dd8b1;
+    }
+
+    .produto-pendente {
+        background-color: #d8b99d;
+    }
+
+    .produto-cancelado {
+        background-color: #d89d9d;
+    }
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+        <h2>Produtos a prazo</h2>
+        <MudGrid Class="paper-style">
+            <MudItem xs="12">
+                <MudText Class="sub-text">Filtros</MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudTextField Variant="Variant.Text" T="string" Label="Nome" />
+            </MudItem>
+            <MudItem xs="4"></MudItem>
+            <MudItem xs="2" Class="d-flex mt-2 no-wrap">
+                <MudButton Style="height:40px; width:120px;" OnClick="BtnAbaterValor" Variant="Variant.Filled" Color="Color.Info">Abater Valor</MudButton>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTable Items="listProdutos" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Breakpoint="Breakpoint.None">
+                    <ToolBarContent>
+                        <MudText Style="font-weight: 700;">@listProdutos.Count() Produtos Encontrados</MudText>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 120px" />
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>CodProduto</MudTh>
+                        <MudTh>Item</MudTh>
+                        <MudTh>Quantidade</MudTh>
+                        <MudTh>Valor Uni.</MudTh>
+                        <MudTh>Valor Total</MudTh>
+                        <MudTh>Data Venda</MudTh>
+                        <MudTh>Data Vencimento</MudTh>
+                        <MudTh>Status Pagamento</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="CodProduto">@context.CodProduto</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Item">@context.Item</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Quantidade">@context.QtdeItens</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Valor Uni.">@context.ValorUnitario.ToString("F2")</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Valor Total">@context.ValorTotal.ToString("F2")</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Data Venda">@context.DataVenda</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Data Vencimento">@context.DataVencimento</MudTd>
+                            <MudTd Class="@GetRowClass(context.StatusPagamento)" DataLabel="Status Pagamento">@context.StatusPagamento</MudTd>
+                            <MudTd>
+                                <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.DeleteForever" OnClick="@(() => BtnRemover(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                        <FooterContent>
+                            <MudTh Style="font-weight: 700; text-align: end; font-size: 20px;" Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="9">VALOR TOTAL: R$ @ValorTotalSaida.ToString("F2")</MudTh>
+                        </FooterContent>
+                        <PagerContent>
+                            <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                        </PagerContent>
+                        <NoRecordsContent>
+                            <MudText Color="Color.Error">Não foi encontrado nenhum Cliente com Produtos a prazo :\</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Carregando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                </MudItem>
+
+                <MudItem Class="d-flex justify-start align-center" xs="4">
+                    <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                        Voltar
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="8"></MudItem>
+
+            </MudGrid>
+
+        </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+    private LoginModel Usr = new();
+
+    [Parameter]
+    public int CodCliente { get; set; }
+    [Parameter]
+    public string? NomeFantasia { get; set; }
+    [Parameter]
+    public string? Cnpj { get; set; }
+    [Parameter]
+    public int CodEmpresa { get; set; }
+
+    public decimal ValorAbater = 0m;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+            listProdutos = CarregaTabelaProdutosAPrazo();
+
+            StateHasChanged();
+        }
+    }
+
+    private List<ProdutosModel> CarregaTabelaProdutosAPrazo()
+    {
+        try
+        {
+
+            var resp = _Produtos.CarregarProdutosAPrazoPorEmpresa(Usr.CodEmpresa, CodCliente);
+
+
+            return resp;
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine("Erro ao carregar produtos a prazo: " + ex.Message);
+            return new List<ProdutosModel>();
+        }
+    }
+
+    private string GetRowClass(string StatusPagamento)
+    {
+        if (StatusPagamento == "PAGO")
+        {
+            return "produto-entregue";
+        }
+        else if (StatusPagamento == "PENDENTE")
+        {
+            return "produto-pendente";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    private async void BtnRemover(ProdutosModel context)
+    {
+        var parameters = new DialogParameters()
+            {
+                ["CodProdutoAPrazo"] = context.CodProdutoAPrazo,
+                ["CodEmpresa"] = Usr.CodEmpresa
+            };
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<RemoverProdutoPrazo>("", parameters, Options).Result;
+
+        if (!result.Cancelled)
+        {
+            string resp = result.Data.ToString()!;
+
+            Snackbar.Add(resp, Severity.Success);
+            listProdutos = CarregaTabelaProdutosAPrazo();
+            
+        }
+
+        StateHasChanged();
+    }
+
+    private async void BtnAbaterValor()
+    {
+
+        var parameters = new DialogParameters();
+        parameters.Add("NomeFantasia", NomeFantasia!);
+        parameters.Add("Cnpj", Cnpj!);
+        DialogOptions Options = new DialogOptions();
+        Options.DisableBackdropClick = true;
+        var result = await DialogService.Show<ModalAbaterValor>("", parameters, Options).Result;
+
+        if (!result.Cancelled && result.Data is ModalResultData resultData)
+        {
+
+            ValorAbater = resultData.ValorAbater;
+            ConfirmarAbaterValor();
+            listProdutos = CarregaTabelaProdutosAPrazo();
+
+            StateHasChanged();
+
+        }
+    }
+
+    private void ConfirmarAbaterValor()
+    {
+        try
+        {
+            string resp = _Produtos.InserirValorAbater(ValorAbater,CodCliente, Usr.CodEmpresa);
+
+            Snackbar.Add("SUCESSO! " + resp.Split("|")[0], Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("ERRO! Ocorreu um problema ao abater o valor: " + ex.Message, Severity.Error);
+        }
+
+    }
+
+    private decimal ValorTotalSaida
+    {
+        get
+        {
+            return listProdutos
+                .Where(item => item.StatusPagamento == "PENDENTE")
+                .Sum(item => item.ValorTotal);
+        }
+    }
+
+
+
+
+    // -------- BTN VOLTAR ----------
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    
+}

@@ -1,0 +1,199 @@
+﻿@page "/editarcotacao"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject ProdutosController _Produtos
+@inject CotacaoController _Cotacao
+@layout MainLayout
+
+<style>
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0px;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .sub-text {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .mud-grid-spacing-xs-3 > .mud-grid-item {
+        padding: 10px 12px;
+    }
+
+    
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+    
+    <h2>Editar Cotação</h2>
+    <MudGrid Class="paper-style">
+        <MudGrid Class="pl-6 pr-6">
+            <MudItem xs="12">
+                <MudText Class="sub-text">Filtros</MudText>
+            </MudItem>
+            <MudGrid Class="mb-5">
+                <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="FiltroNumCotacao" Immediate="true" @onkeyup="OnFiltroChanged" Variant="Variant.Text" T="string" Label="N. Cotação" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="FiltroNomeFantasia" Immediate="true" @onkeyup="OnFiltroChanged" Variant="Variant.Text" T="string" Label="Nome Fantasia" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="FiltroCnpj" @onkeyup="OnFiltroChanged" Variant="Variant.Text" T="string" Label="Cnpj" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="FiltroData" @onkeyup="OnFiltroChanged" Variant="Variant.Text" T="string" Label="Data" />
+                </MudItem>
+            </MudGrid>
+        </MudGrid>
+        <MudGrid Class=" d-flex flex-column">
+            <MudItem xs="12">
+                    <MudTable Items="listaFiltradaCotacoes" Striped="true" Bordered="true" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Class="mb-5" Breakpoint="Breakpoint.None">
+                    <ToolBarContent>
+                        <MudText Style="font-weight: 700;">@listCotacao.Count() Cotações Encontradas</MudText>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 180px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 40px;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>N. Cotação</MudTh>
+                        <MudTh>Nome Fantasia</MudTh>
+                        <MudTh>Cnpj</MudTh>
+                        <MudTh>Data Criação</MudTh>
+                        <MudTh>Valor Total</MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="N. Cotação">@context.NumCotacao</MudTd>
+                        <MudTd DataLabel="Nome Fantasia">@context.NomeFantasia</MudTd>
+                        <MudTd DataLabel="Cnpj">@context.Cnpj</MudTd>
+                        <MudTd DataLabel="Data Criação">@context.DataCriacao</MudTd>
+                        <MudTd DataLabel="Valor Total">@context.ValorTotal.ToString("F2")</MudTd>
+                        <MudTd>
+                            <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => BtnEditar(context))" />
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                    </PagerContent>
+                    <NoRecordsContent>
+                        <MudText Color="Color.Error">Não foi encontrado nenhuma movimentação :\</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Carregando...</MudText>
+                    </LoadingContent>
+                </MudTable>
+                    <MudItem xs="10"></MudItem>
+                    <MudItem xs="2">
+                        <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                            Voltar
+                        </MudButton>
+                    </MudItem>
+            </MudItem>
+            
+            
+
+        </MudGrid>
+    </MudGrid>
+
+</div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+    private List<CotacaoModel> listCotacao = new List<CotacaoModel>();
+    private List<CotacaoModel> listaFiltradaCotacoes;
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private decimal valorTotal = 0;
+    private string FiltroNumCotacao = string.Empty;
+    private string FiltroNomeFantasia = string.Empty;
+    private string FiltroCnpj = string.Empty;
+    private string FiltroData = string.Empty;
+   
+    
+
+    private LoginModel Usr = new();
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+            listCotacao = _Cotacao.CarregarCotacoes();
+            listaFiltradaCotacoes = new List<CotacaoModel>(listCotacao);
+
+            StateHasChanged();
+        }
+    }
+
+    private void OnFiltroChanged()
+    {
+        FiltrarCotacoes();
+        StateHasChanged();
+    }
+
+    private void FiltrarCotacoes()
+    {
+        listaFiltradaCotacoes = listCotacao.Where(c =>
+            (string.IsNullOrEmpty(FiltroNumCotacao) || c.NumCotacao.ToLower().Contains(FiltroNumCotacao.ToLower())) &&
+            (string.IsNullOrEmpty(FiltroNomeFantasia) || c.NomeFantasia.ToLower().Contains(FiltroNomeFantasia.ToLower())) &&
+            (string.IsNullOrEmpty(FiltroCnpj) || c.Cnpj.ToLower().Contains(FiltroCnpj.ToLower())) &&
+            (string.IsNullOrEmpty(FiltroData) || c.DataCriacao.ToString().ToLower().Contains(FiltroData.ToLower()))
+        ).ToList();
+    }
+
+
+    private void BtnEditar(CotacaoModel cotacao)
+    {
+        Navigation.NavigateTo($"/editarcotacaobtneditar/{cotacao.CodCotacao}/{Uri.EscapeDataString(cotacao.NomeFantasia)}/{Uri.EscapeDataString(cotacao.Cnpj)}/{cotacao.PrazoEntregaRetornado}/{cotacao.FaturamentoRetornado}/{cotacao.NumCotacao}");
+
+    }
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+    
+}

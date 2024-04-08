@@ -1,0 +1,111 @@
+﻿@inject GeralController _Geral
+@inject ProdutosController _Produtos
+
+<style>
+
+    /* estiliza a cor do label do textfield antes de ser clicado */
+    .mud-input-label {
+        color: #ACACAB !important;
+    }
+    /* cor do houver do textfield  */
+    .mud-input.mud-input-underline:after {
+        border-bottom: 2px solid #04D282;
+    }
+    /* muda cor do label depois de algo ser digitado */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+    /* cor do textfield depois de digitado */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        display: none;
+    }
+
+
+</style>
+
+<MudGrid Class="paper-style" Style="margin-bottom:0px !important;padding:50px 30px !important;">
+    <MudItem xs="12">
+        <MudText Style="color:#fff;
+                        text-align:center;
+                        text-transform:uppercase;
+                        font-weight:900;"> Selecione a categoria que deseja remover</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudSelect T="int" Variant="Variant.Text" Label="Categoria" @bind-Value="Categoria">
+            <MudSelectItem Value="0">Selecione</MudSelectItem>
+            @foreach (var categoria in DropCategoria)
+            {
+                <MudSelectItem Value="categoria.Codigo">@categoria.Descricao</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Color="Color.Error">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnRemover" Variant="Variant.Filled" Color="Color.Success">
+            Remover
+        </MudButton>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center align-center">
+        <MudText Color="Color.Error">@Mensagem</MudText>
+        </MudItem>
+    </MudGrid>
+
+    @code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private int Categoria = 0;
+    private List<DropDownModel> DropCategoria = new List<DropDownModel>();
+    private string Mensagem = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DropCategoria = _Produtos.CarregaCategorias();
+        StateHasChanged();
+        await base.OnInitializedAsync();
+    }
+
+    private void BtnRemover()
+    {
+        if (Categoria > 0)
+        {
+            var resp = _Geral.RemoverCategoria(Categoria);
+            string mensagem = resp.Split("|")[0];
+
+            if (resp.Substring(0, 4) == "ERRO")
+            {
+                Mensagem = mensagem;
+            }
+            else
+            {
+                MudDialog!.Close(DialogResult.Ok(mensagem));
+            }
+        }
+        else
+        {
+            Mensagem = "ERRO! Favor selecionar uma categoria para remover";
+        }
+    }
+
+    private void BtnCancelar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}

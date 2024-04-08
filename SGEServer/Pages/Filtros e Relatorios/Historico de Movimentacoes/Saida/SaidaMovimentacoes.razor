@@ -1,0 +1,183 @@
+﻿@page "/saidamovimentacoes"
+
+@inject ExcelHelper _Excel
+@inject ProdutosController _Produtos
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@layout MainLayout
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color: #fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+   
+</style>
+
+@if (isAuthenticated)
+{
+    <div class="d-flex justify-center align-center">
+
+        <MudGrid Class="ma-5">
+            <MudItem Class="d-flex align-center justify-center" xs="12">
+                <h2>Movimentações de Saída</h2>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTable Striped="true" Bordered="true" Items="listMovimentacao" FixedHeader="true" FixedFooter="true" Height="500px" Hover="true" Breakpoint="Breakpoint.None">
+                    <ToolBarContent>
+                        <MudText Style="font-weight: 700;">@listMovimentacao.Count() Movimentações Encontradas</MudText>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 180px;" />
+                        <col style="width: 120px;" />
+                        <col />
+                        <col style="width: 120px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 120px;" />
+                        <col style="width: 120px;" />
+                        <col style="width: 120px;" />
+                        <col style="width: 180px;" />
+                        <col style="width: 120px;" />
+                        <col style="width: 120px;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Id Movimentação</MudTh>
+                        <MudTh>Id Produto</MudTh>
+                        <MudTh>Item</MudTh>
+                        <MudTh>Quantidade</MudTh>
+                        <MudTh>Tipo Movimentação</MudTh>
+                        <MudTh>Data Movimentação</MudTh>
+                        <MudTh>Valor Uni.</MudTh>
+                        <MudTh>Valor Total</MudTh>
+                        <MudTh>Nome Fantasia</MudTh>
+                        <MudTh>Cnpj</MudTh>
+                        <MudTh>Retirado Por</MudTh>
+                        <MudTh>RefOrdemCompra</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Id Movimentação">@context.IdMovimentacao</MudTd>
+                            <MudTd DataLabel="Id Produto">@context.CodProduto</MudTd>
+                            <MudTd DataLabel="Item">@context.Item</MudTd>
+                            <MudTd DataLabel="Quantidade">@context.Quantidade</MudTd>
+                            <MudTd DataLabel="Tipo Movimentação">@context.TipoMovimentacao</MudTd>
+                            <MudTd DataLabel="Data Movimentação">@context.DataMovimentacao</MudTd>
+                            <MudTd DataLabel="Valor Uni.">R$ @context.ValorUnitario.ToString("F2")</MudTd>
+                            <MudTd DataLabel="Valor Total">R$ @context.ValorTotal.ToString("F2")</MudTd>
+                            <MudTd DataLabel="NomeFantasia">@context.NomeFantasia</MudTd>
+                            <MudTd DataLabel="Cnpj">@context.Cnpj</MudTd>
+                            <MudTd DataLabel="RetiraPor">@context.RetiradoPor</MudTd>
+                            <MudTd DataLabel="RefOrdemCompra">@context.RefOrdemCompra</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                        </PagerContent>
+                        <NoRecordsContent>
+                            <MudText Color="Color.Error">Não foi encontrado nenhuma movimentação :\</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Carregando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Color="@mensagemCor">@mensagem</MudText>
+                </MudItem>
+                <MudItem Class="d-flex justify-space-between" xs="12">
+                    <MudButton OnClick="BtnVoltar"  Variant="Variant.Filled" Color="Color.Error"> Voltar</MudButton>
+                    <MudButton  OnClick="BtnExportar" Variant="Variant.Filled" Color="Color.Info" Style="justify-self: end;"> Exportar </MudButton>
+                </MudItem>
+
+            </MudGrid>
+
+        </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+    private LoginModel Usr = new();
+    private List<MovimentacaoModel> listMovimentacao = new List<MovimentacaoModel>();
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private string mensagem = "";
+    private Color mensagemCor = Color.Default;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+               listMovimentacao = CarregaTabelaMovimentacao();
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private List<MovimentacaoModel> CarregaTabelaMovimentacao()
+    {
+        var resp = _Produtos.CarregaMovimentacaoSaida(Usr.CodEmpresa, "");
+
+        return resp;
+    }
+
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/historicomovimentacoes");
+    }
+
+    private async void BtnExportar()
+    {
+        if (listMovimentacao.Count() > 0)
+        {
+            List<string> colunas = new()
+        {
+            "Id Movimentação",
+            "Id Produto",
+            "Item",
+            "Quantidade",
+            "Tipo Movimentação",
+            "Data Movimentação",
+            "Valor Total"
+        };
+
+            List<List<string>> linhas = new();
+
+            foreach (var linha in listMovimentacao)
+            {
+                linhas.Add(new()
+            {
+                linha.IdMovimentacao.ToString()!,
+                linha.CodProduto.ToString()!,
+                linha.Item!,
+                linha.Quantidade.ToString()!,
+                linha.TipoMovimentacao,
+                linha.DataMovimentacao.ToString()!,
+                linha.ValorUnitario.ToString()!
+            });
+            }
+
+            await _Excel.ExportarTabelaXlsx("Movimentações Entrada", colunas, linhas);
+        }
+        else
+        {
+            mensagem = "ERRO! Não existem dados para exportar";
+            mensagemCor = Color.Error;
+        }
+    }
+}

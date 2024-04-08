@@ -1,0 +1,240 @@
+﻿@page "/"
+
+@inject NavigationManager Navigation
+@inject LoginController_old _Login
+@inject AuthenticationLogin AuthStateProvider
+@inject Acesso Access
+
+<style>
+	/* estiliza a cor do label do textfield antes de ser clicado */
+	.mud-input-label {
+		color: #ACACAB !important;
+	}
+	.layout-login {
+		background-image: url('Img/bgk-login.webp');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 100vh;
+		flex-direction: column;
+		position: relative;
+	}
+
+	h1 {
+		font-size: 50px;
+		color: #fff;
+		font-weight: bold;
+		text-transform: uppercase;
+		position: absolute;
+		top: 10%;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.grid-login {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		max-width: 360px;
+		padding: 25px;
+		background-color: #011E36;
+		border-radius: 20px;
+		border: 1px solid #04D282;
+	}
+
+	.container-logo {
+		width:100%;
+		display: flex; 
+		flex-direction:column;
+		justify-content: center;
+		align-items:center;
+	}
+
+	.logo-web-lab {
+		max-width: 120px;
+		position: relative; /* Ajustado para ser relativo dentro do container-logo */
+		margin-bottom:20px;
+	}
+	/* tamanho do textfield */
+	.mud-input > input.mud-input-root{
+		padding:20px 5px;
+	}
+	/* cor do houver do textfield  */
+	.mud-input.mud-input-underline:after {
+		border-bottom: 2px solid #04D282;
+	}
+	/* Fazer o fundo do preenchimento automático transparente para mostrar a cor de fundo da página */
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	input:-webkit-autofill:active {
+		transition: background-color 5000s ease-in-out 0s; /* Atrasa qualquer mudança de cor de fundo */
+		box-shadow: 0 0 0px 1000px transparent inset !important; /* Tentativa de transparência */
+	}
+	/* Mudar a cor do texto do preenchimento automático para branco */
+	input:-webkit-autofill {
+		-webkit-text-fill-color: #fff !important;
+	}
+	/* muda cor do label depois de algo ser digitado */
+	.mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+		color: #fff !important;
+	}
+	/* cor do textfield depois de digitado */
+	.mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+		color: #fff;
+	}
+	/* cor do icone da senha */
+	.mud-icon-root.mud-svg-icon {
+		color: #fff;
+	}
+	#container-linha {
+		width:100%;
+		display:flex;
+		justify-content:center;
+		align-items:center;
+	}
+	.line {
+		width:35%;
+		border-bottom: 1px solid #ACACAB;
+	}
+
+	.circle {
+		width:6px;
+		height:6px;
+		border-radius:50%;
+		border: 1px solid #ACACAB;
+		margin:0px 10px;
+	}
+
+</style>
+
+<div class="layout-login">
+	<MudItem xs="12">
+		<h1>Sistema de Gestão e Estoque</h1>
+	</MudItem>
+
+	<MudGrid Class="grid-login">
+		<MudItem xs="12" Class="container-logo">
+			<img class="logo-web-lab" src="Img/logo web-lab.svg" />
+			<MudItem xs="12" id="container-linha">
+				<div class="line"></div>
+				<div class="circle"></div>
+				<div class="circle"></div>
+				<div class="circle"></div>
+				<div class="line"></div>
+			</MudItem>
+		</MudItem>
+		<MudItem xs="12">
+			<MudTextField T="string" Required RequiredError="O campo Usuário é obrigatório!" @ref="TextFieldUsuario" @bind-Value="Usuario.Usuario" Variant="Variant.Text" Label="Usuário" />
+		</MudItem>
+		<MudItem xs="12">
+			<MudTextField T="string" Required RequiredError="O campo Senha é obrigatório!" @ref="TextFieldSenha" @bind-Value="Usuario.Password" Variant="Variant.Text" Label="Senha" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonSenhaClick" AdornmentAriaLabel="Mostrar Senha" />
+		</MudItem>
+		<MudItem xs="12">
+			<MudButton OnClick="ValidaLogin" Color="Color.Success" Style="width: 100%;" Variant="Variant.Filled">Entrar</MudButton>
+		</MudItem>
+		<MudItem xs="12">
+			@if (MsgErro)
+			{
+				<MudAlert Severity="Severity.Error">@Mensagem</MudAlert>
+			}
+		</MudItem>
+		
+	</MudGrid>
+</div>
+
+@code {
+	[CascadingParameter]
+	public AuthenticationLogin? Auth { get; set; }
+
+	public DadosAcessoLogin Usuario = new DadosAcessoLogin();
+
+	private string Mensagem = string.Empty;
+	private bool MsgErro = false;
+
+	private MudTextField<string>? TextFieldUsuario;
+	private MudTextField<string>? TextFieldSenha;
+
+	private bool isShow;
+	private InputType PasswordInput = InputType.Password;
+	private string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+	protected override async Task OnAfterRenderAsync(bool firstrender)
+	{
+		try
+		{
+			if (firstrender)
+			{
+				await AuthStateProvider.Logout();
+				Navigation.NavigateTo("/");
+			}
+		}
+		catch (Exception ex)
+		{
+			Mensagem = "ERRO: " + ex.Message;
+		}
+	}
+
+	private async Task ValidaLogin()
+	{
+		try
+		{
+			if (Auth == null)
+			{
+				return;
+			}
+
+			LoginModel Acesso = await Access.Login(Usuario);
+
+			if (Acesso.UserResposta!.Substring(0, 4).ToString().ToUpper() == "ERRO")
+			{
+				Mensagem = Acesso.UserResposta;
+				MsgErro = true;
+				return;
+			}
+
+			if (!Acesso.UserResposta.ToString().ToUpper().Contains("SUCESSO"))
+			{
+				Mensagem = "ERRO: Não foi possível realizar o login do usuário";
+				MsgErro = true;
+				return;
+			}
+
+			Mensagem = string.Empty;
+			MsgErro = false;
+
+			Acesso = Access.ObterLogin(Acesso.CodUsuario);
+			UserInfo.CodEmpresa = Acesso.CodEmpresa;
+			await Auth.Login(Acesso.Token!);
+
+			Navigation.NavigateTo("/dashboard");
+
+			StateHasChanged();
+		}
+		catch (Exception ex)
+		{
+			Mensagem = "ERRO: " + ex.Message;
+			MsgErro = true;
+		}
+	}
+
+	private void ButtonSenhaClick()
+	{
+		if (isShow)
+		{
+			isShow = false;
+			PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+			PasswordInput = InputType.Password;
+		}
+		else
+		{
+			isShow = true;
+			PasswordInputIcon = Icons.Material.Filled.Visibility;
+			PasswordInput = InputType.Text;
+		}
+	}
+}

@@ -1,0 +1,58 @@
+﻿@inject IDialogService DialogService
+
+<style>
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        padding: 0px;
+    }
+</style>
+
+<MudGrid Style="max-width: 600px;" Class="paper-style">
+    <MudItem xs="10"></MudItem>
+    <MudItem xs="2">
+        <MudButton Color="Color.Error" OnClick="BtnFechar" Variant="Variant.Filled">
+            X
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText Style="font-weight: 700; text-transform: uppercase;color:#fff;">Deseja limpar os dados dad empresa?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Color="Color.Error">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnConfirmar" Variant="Variant.Filled" Color="Color.Success">
+            Confirmar
+        </MudButton>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    private void BtnConfirmar()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void BtnCancelar()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void BtnFechar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}
+
+
+

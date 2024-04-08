@@ -1,0 +1,31 @@
+﻿@page "/"
+@namespace SGEServer.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />
+
+<script>
+    window.downloadFile = function (base64String, fileName, contentType) {
+        var blob = base64StringToBlob(base64String, contentType);
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function base64StringToBlob(base64String, contentType) {
+        contentType = contentType || '';
+        var byteCharacters = atob(base64String);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray], { type: contentType });
+    }
+</script>

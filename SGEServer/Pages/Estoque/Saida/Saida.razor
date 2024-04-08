@@ -1,0 +1,633 @@
+﻿@page "/saida"
+
+@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+@inject ClientesController _Clientes
+@inject ProdutosController _Produtos
+@inject ISnackbar Snackbar
+@layout MainLayout
+
+<style>
+    /* cor dos label */
+    .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+        color: #fff;
+    }
+    /* cor do required caracteres */
+    .ms-auto {
+        color: #fff;
+    }
+    /* cor do required text */
+    .me-auto {
+        color: #fff;
+    }
+    /* cor do label mudSelect */
+    .mud-shrink ~ label.mud-input-label.mud-input-label-inputcontrol, .mud-input:focus-within ~ label.mud-input-label.mud-input-label-inputcontrol {
+        color: #fff;
+    }
+    /* cor das opcoes do mudSelect */
+    .mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+        color: #fff;
+    }
+    /* cor do button do mud select */
+    .mud-icon-root.mud-svg-icon {
+        color: #fff;
+    }
+    /* cor texto do textarea */
+    .mud-input > textarea.mud-input-root {
+        color: #fff !important;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+        background-color: #063862;
+    }
+    .no-wrap {
+        white-space: nowrap;
+    }
+    h2 {
+        text-align: center;
+        font-size: @Variaveis.FontPadrao;
+        font-weight: 700;
+        margin: 20px 0;
+        text-transform: uppercase;
+        color:#fff;
+    }
+
+    .margin-padrao {
+        margin: 0 10%;
+    }
+
+    .Titulo-ordem-de-compra {
+        text-align: start;
+        font-size: @Variaveis.FontSubTitulo;
+    }
+
+</style>
+
+
+@if (isAuthenticated)
+{
+    <div class="margin-padrao">
+        <h2>Saída</h2>
+
+        
+            <MudGrid>
+                <MudItem Class="d-flex flex-column paper-style mb-4">
+                    <h2 class="Titulo-ordem-de-compra">Empresa para pagamento a prazo</h2>
+                    <MudAutocomplete @key="autocompleteKey" T="ClientesModel"
+                                     Value="selectedCliente"
+                                     ValueChanged="OnClienteSelected"
+                                     SearchFunc="@SearchCliente"
+                                     Label="Empresa"
+                                     ToStringFunc="@((item) => item != null ? item.NomeFantasia : string.Empty)"
+                                     ResetValueOnEmptyText="true"
+                                     CoerceText="true" CoerceValue="false"
+                                     Variant="Variant.Text"
+                                     AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                </MudItem>
+            </MudGrid>
+            
+        <MudGrid Class="paper-style">
+            <MudItem xs="12">
+                <div @onfocusin="() => isItemFocused = true"
+                     @onfocusout="ManipularDesfoqueDoItem">
+                    <MudAutocomplete @key="autocompleteKey" T="ProdutosModel"
+                                     Value="selectedProduto"
+                                     ValueChanged="OnItemSelected"
+                                     SearchFunc="@SearchItem"
+                                     Label="Item"
+                                     ToStringFunc="@((item) => item != null ? item.Item : string.Empty)"
+                                     ResetValueOnEmptyText="true"
+                                     CoerceText="true" CoerceValue="false"
+                                     Variant="Variant.Text"
+                                     AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+
+                    @if (!string.IsNullOrEmpty(mensagemItemDuplicado))
+                    {
+                        <MudText Color="Color.Info">@mensagemItemDuplicado</MudText>
+                    }
+                    @if (!string.IsNullOrEmpty(mensagemErroItem))
+                    {
+                        <MudText Color="Color.Error">@mensagemErroItem</MudText>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(errorMessage))
+                    {
+                        <MudText Color="Color.Error">@errorMessage</MudText>
+                    }
+                </div>
+            </MudItem>
+
+            
+            <MudItem xs="4">
+                <MudTextField @bind-Value="Quantidade"
+                              Variant="Variant.Text"
+                              T="int"
+                              OnBlur="OnBlurQuantidade"
+                              Label="Quantidade de Saída" />
+
+                @if (!string.IsNullOrEmpty(mensagemErro))
+                {
+                    <MudText Color="Color.Error">@mensagemErro</MudText>
+                }
+                @if (!string.IsNullOrWhiteSpace(QuantidadeErrorMessage))
+                {
+                    <MudText Color="Color.Error">@QuantidadeErrorMessage</MudText>
+                }
+            </MudItem>
+            <MudItem xs="2">
+                <MudTextField ReadOnly
+                               Variant="Variant.Filled"
+                               Value="@QuantidadeEstoque"
+                               T="int"
+                               Label="Quantidade em Estoque"
+                               Class="no-wrap"/>
+             </MudItem>
+             <MudItem xs="6"></MudItem>
+
+             <MudItem xs="4">
+                 <MudTextField @bind-Value="ValorUnitario"
+                                Variant="Variant.Text" 
+                                T="decimal"
+                               OnBlur="OnBlurValorUnitario"
+                                Label="Valor Unitário" />
+                 @if (!string.IsNullOrWhiteSpace(valorUnitarioErrorMessage))
+                {
+                    <MudText Color="Color.Error">@valorUnitarioErrorMessage</MudText>
+                }
+             </MudItem>
+             <MudItem class="mr-4" xs="2">
+                 <MudTextField ReadOnly Variant="Variant.Filled"
+                               Value="@(selectedProduto.ValorVendaIndicado)"
+                               T="decimal"
+                               Label="Valor Indicado de venda"
+                               Format="F2"
+                               Class="no-wrap" />
+             </MudItem>
+             <MudItem class="mr-4" xs="2">
+                 <MudTextField ReadOnly Variant="Variant.Filled"
+                               Value="@(selectedProduto.LucroVenda)"
+                               T="decimal"
+                               Label="% de lucro"
+                               Class="no-wrap" />
+             </MudItem>
+             <MudItem xs="4"></MudItem>
+             <MudItem Class="d-flex" xs="12">
+
+                 <MudItem class="mr-4" xs="3">
+                     <MudTextField ReadOnly Variant="Variant.Filled"
+                                   Value="@(selectedCliente?.Cnpj?.ToString())"
+                                   T="string"
+                                   Label="CNPJ" />
+                 </MudItem>
+                 <MudItem class="mr-4" xs="3">
+                     <MudTextField ReadOnly Variant="Variant.Filled"
+                                   Value="@(selectedCliente?.NomeFantasia?.ToString())"
+                                   T="string"
+                                   Label="Nome Fantasia" />
+                 </MudItem>
+                 <MudItem class="mr-4" xs="3">
+                    <MudTextField @bind-Value="TipoMovimentacao" ReadOnly Variant="Variant.Filled" T="string" Class="no-wrap" Label="Tipo de Movimentação">Saida</MudTextField>
+                 </MudItem>
+                 <MudItem xs="3">
+                     <MudTextField @bind-Value="RetiradoPor" Variant="Variant.Text" T="string" Label="Retirado por" />
+                 </MudItem>
+             </MudItem>
+             <MudItem Class="d-flex justify-start" xs="12">
+                 <MudButton OnClick="BtnAdicionar" Variant="Variant.Filled" Color="Color.Info"> Adicionar </MudButton>
+             </MudItem>
+
+             <MudItem xs="12">
+                 <MudTable Items="listProdutos" FixedFooter="true" Height="350px" Hover="true" Breakpoint="Breakpoint.None">
+                     <ColGroup>
+                         <col style="width: 120px;" />
+                         <col />
+                         <col />
+                         <col style="width: 120px;" />
+                         <col style="width: 60px;" />
+                         <col style="width: 60px;" />
+                     </ColGroup>
+                     <HeaderContent>
+                         <MudTh>Qtde</MudTh>
+                         <MudTh>Item</MudTh>
+                         <MudTh>Valor Un.</MudTh>
+                         <MudTh>Valor Total</MudTh>
+                         <MudTh>RetiradoPor</MudTh>
+                         <MudTh></MudTh>
+                     </HeaderContent>
+                     <RowTemplate>
+                         <MudTd DataLabel="Qtde">@context.QtdeItens</MudTd>
+                            <MudTd DataLabel="Item">@context.Item</MudTd>
+                            <MudTd DataLabel="Valor Un.">R$ @context.ValorUnitario.ToString("F2")</MudTd>
+                            <MudTd DataLabel="Valor Total">R$ @context.ValorTotal.ToString("F2")</MudTd>
+                            <MudTd DataLabel="RetiradoPor">@context.RetiradoPor</MudTd>
+                            <MudTd>
+                                <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.DeleteForever" OnClick="@(() => BtnRemover(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                        <FooterContent>
+                            <MudTh Style="font-weight: 700; text-align: end; font-size: 20px;" Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="6">VALOR TOTAL: R$ @ValorTotalSaida.ToString("F2")</MudTh>
+                        </FooterContent>
+                        <PagerContent>
+                            <MudTablePager style="overflow-y: scroll;" InfoFormat="@itensInfoFormat" RowsPerPageString="Itens por pág." />
+                        </PagerContent>
+                        <NoRecordsContent>
+                            <MudText Color="Color.Error">Nenhum item adicionado ainda...</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Carregando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                    @if (!string.IsNullOrEmpty(mensagemDeErroSaida))
+                {
+                    <MudText Color="Color.Error">@mensagemDeErroSaida</MudText>
+                }
+            </MudItem>
+            <MudGrid Class="d-flex">
+                <MudItem Class="d-flex justify-start" xs="6">
+                    <MudButton OnClick="BtnVoltar" Variant="Variant.Filled" Color="Color.Error">
+                        Cancelar
+                    </MudButton>
+                </MudItem>
+                <MudItem Class="d-flex justify-end" xs="6">
+                    <MudButton OnClick="BtnSaida" Variant="Variant.Filled" Color="Color.Success">
+                        Saída
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+            
+
+        </MudGrid>
+
+    </div>
+}
+
+@code {
+    private bool isAuthenticated = false;
+    private string itensInfoFormat = "{first_item}-{last_item} de {all_items}";
+    private List<ProdutosModel> listProdutos = new List<ProdutosModel>();
+    private ClientesModel selectedCliente = new ClientesModel();
+    private decimal valorTotal = 0m;
+    private List<ClientesModel> listSearch = new List<ClientesModel>();
+    private List<ProdutosModel> listSearchProduto = new List<ProdutosModel>();
+    private ProdutosModel selectedProduto = new ProdutosModel();
+    private int selectedCodCliente;
+    private string Cnpj = string.Empty;
+    private string Item = string.Empty;
+    private int Quantidade = 0;
+    private decimal ValorUnitario = 0m;
+    private string NumCotacao = string.Empty;
+    private string RetiradoPor = string.Empty;
+    private int autocompleteKey = 0;
+    private string TipoMovimentacao = "Saida";
+    private string mensagemErro = string.Empty;
+    private string mensagemDeErroSaida = string.Empty;
+    private int QuantidadeEstoque;
+    private string mensagemItemDuplicado = string.Empty;
+    private bool isItemFocused = false;
+    private string mensagemErroItem = string.Empty;
+    private bool isProdutoSelectedValid = true;
+    private string errorMessage = "";
+    private string valorUnitarioErrorMessage = "";
+    private bool isUnitarioValid = true;
+    private string QuantidadeErrorMessage = "";
+    private bool isQuantidadeValid = true;
+    private LoginModel Usr = new();
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                isAuthenticated = await AuthenticationLogin.AuthenticateUser(authStateProvider, Usr, Navigation);
+
+                listSearch = _Clientes.CarregaClientesCadastrados(Usr.CodEmpresa);
+
+                listSearchProduto = _Produtos.CarregaProdutosCadastrados(Usr.CodEmpresa, "");
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    private async Task<IEnumerable<ClientesModel>> SearchCliente(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return new List<ClientesModel>();
+
+        return listSearch.Where(x => x.NomeFantasia!.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+    }
+
+    private void OnClienteSelected(ClientesModel newValue)
+    {
+        selectedCliente = newValue ?? new ClientesModel();
+        selectedCodCliente = selectedCliente.CodCliente;
+    }
+
+    private async Task<IEnumerable<ProdutosModel>> SearchItem(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return new List<ProdutosModel>();
+
+        return listSearchProduto.Where(x => x.Item!.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+    }
+
+    private void OnItemSelected(ProdutosModel newValue)
+    {
+        selectedProduto = newValue ?? new ProdutosModel();
+
+        if (selectedProduto == null || string.IsNullOrEmpty(selectedProduto.Item))
+        {
+            mensagemErroItem = string.Empty;
+            mensagemItemDuplicado = string.Empty;
+            mensagemErro = string.Empty;
+            Quantidade = 0;
+        }
+        else
+        {
+            CalcularQuantidadeEstoque();
+            VerificarDisponibilidadeEstoque();
+        }
+        ValidaSelectedProduto();
+
+        StateHasChanged();
+    }
+
+    private void ValidaSelectedProduto()
+    {
+        if (selectedProduto == null || string.IsNullOrWhiteSpace(selectedProduto.Item))
+        {
+            errorMessage = "Campo de Item é obrigatório.";
+            isProdutoSelectedValid = false;
+        }
+        else
+        {
+            errorMessage = "";
+            isProdutoSelectedValid = true;
+        }
+    }
+
+    private void OnBlurValorUnitario()
+    {
+        if (!decimal.TryParse(ValorUnitario.ToString(), out decimal valor) || valor <= 0)
+        {
+            valorUnitarioErrorMessage = "Valor Total de Compra deve ser maior que zero.";
+            isUnitarioValid = false;
+        }
+        else
+        {
+            valorUnitarioErrorMessage = "";
+            isUnitarioValid = true;
+        }
+    }
+
+    private void OnBlurQuantidade()
+    {
+        if (Quantidade <= 0)
+        {
+            QuantidadeErrorMessage = "Quantidade deve ser maior que zero.";
+            isQuantidadeValid = false;
+        }
+        else
+        {
+            QuantidadeErrorMessage = "";
+            isQuantidadeValid = true;
+        }
+    }
+
+    private void VerificarDisponibilidadeEstoque()
+    {
+        if (selectedProduto != null && QuantidadeEstoque <= 0)
+        {
+            mensagemErroItem = $"O item '{selectedProduto.Item}' não está disponível no estoque.";
+        }
+        else
+        {
+            mensagemErroItem = string.Empty;
+        }
+    }
+
+    private void BtnVoltar()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    private void BtnRemover(ProdutosModel dados)
+    {
+        if (dados != null)
+        {
+            listProdutos.Remove(dados);
+
+            CalcularQuantidadeEstoque();
+        }
+
+        StateHasChanged();
+    }
+
+    private void BtnAdicionar()
+    {
+        if (ValidarCampos())
+        {
+            listProdutos.Add(new ProdutosModel
+                {
+                    Item = selectedProduto.Item,
+                    Cnpj = selectedCliente.Cnpj,
+                    CodCliente = selectedCodCliente,
+                    NomeFantasia = selectedCliente.NomeFantasia,
+                    TipoMovimentacao = TipoMovimentacao,
+                    RetiradoPor = RetiradoPor,
+                    CodProduto = selectedProduto.CodProduto,
+                    QtdeItens = Quantidade,
+                    ValorUnitario = ValorUnitario,
+                    ValorTotal = Quantidade * ValorUnitario
+                });
+
+            mensagemItemDuplicado = string.Empty;
+
+            LimparDados();
+        }
+
+
+        StateHasChanged();
+    }
+
+    private void ManipularDesfoqueDoItem()
+    {
+        if (!isItemFocused)
+        {
+            CheckForDuplicateItem();
+            StateHasChanged();
+        }
+
+        Task.Delay(100).ContinueWith(_ => isItemFocused = false);
+    }
+
+    private void CheckForDuplicateItem()
+    {
+        if (!isItemFocused && selectedProduto != null &&
+            listProdutos.Any(p => p.CodProduto == selectedProduto.CodProduto))
+        {
+            mensagemItemDuplicado = "Este item já foi adicionado à lista.";
+        }
+        else
+        {
+            mensagemItemDuplicado = string.Empty;
+        }
+    }
+
+    private void LimparDados()
+    {
+        selectedProduto = new ProdutosModel();
+        autocompleteKey++;
+        Quantidade = 0;
+        QuantidadeEstoque = 0;
+        ValorUnitario = 0;
+        RetiradoPor = string.Empty;
+        listSearch = _Clientes.CarregaClientesCadastrados(Usr.CodEmpresa);
+        listSearchProduto = _Produtos.CarregaProdutosCadastrados(Usr.CodEmpresa, "");
+        mensagemErro = string.Empty;
+
+        StateHasChanged();
+    }
+
+    private void LimparTela()
+    {
+        LimparDados();
+        selectedCliente = new ClientesModel();
+        listProdutos.Clear();
+
+        StateHasChanged();
+    }
+
+    private void BtnSaida()
+    {
+        foreach (var produto in listProdutos)
+        {
+            int qtdeTotalItens = 0;
+
+            foreach (var prd in listProdutos)
+            {
+                if (produto.CodProduto == prd.CodProduto)
+                {
+                    qtdeTotalItens += prd.QtdeItens;
+                }
+            }
+
+            var produtoEmEstoque = _Produtos.CarregaProdutoPorCod(produto.CodProduto);
+
+            if (qtdeTotalItens > produtoEmEstoque.QuantidadeEstoque)
+            {
+                mensagemDeErroSaida += $"Erro: A quantidade do item '{produto.Item}' é maior que a disponível em estoque. ";
+                StateHasChanged();
+                return;
+            }
+        }
+
+        try
+        {
+            foreach (var produto in listProdutos)
+            {
+                string resp = _Produtos.RealizaSaidaEstoque(Usr.CodEmpresa, produto);
+
+                Snackbar.Add(resp.Split("|")[0], Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("ERRO! Ocorreu um problema ao dar saida no Produto: " + ex.Message, Severity.Error);
+        }
+
+
+        LimparTela();
+    }
+
+    private decimal ValorTotalSaida
+    {
+        get
+        {
+            return listProdutos.Sum(item => item.ValorTotal);
+        }
+    }
+
+    private bool ValidarCampos()
+    {
+        if (selectedProduto == null)
+        {
+            mensagemErro = "Nenhum produto foi selecionado, tente novamente!";
+            return false;
+        }
+
+        if (Quantidade <= 0)
+        {
+            mensagemErro = "Insira uma quantidade maior do que zero e tente novamente!";
+            return false;
+        }
+
+        if (Quantidade > QuantidadeEstoque)
+        {
+            mensagemErro = "Insira uma quantidade menor ou igual ao total em estoque e tente novamente!";
+            return false;
+        }
+
+        if (!decimal.TryParse(ValorUnitario.ToString(), out decimal valor) || valor <= 0)
+        {
+            valorUnitarioErrorMessage = "Valor Unitario de Compra deve ser maior que zero.";
+            return false;
+        }
+        else
+        {
+            valorUnitarioErrorMessage = "";
+        }
+
+        int qtdeTotalItens = 0;
+
+        foreach (var produto in listProdutos)
+        {
+            if (produto.CodProduto == selectedProduto.CodProduto)
+            {
+                qtdeTotalItens += produto.QtdeItens;
+            }
+        }
+
+        int soma = qtdeTotalItens + Quantidade;
+
+        if (soma > selectedProduto.QuantidadeEstoque)
+        {
+            mensagemErro = "A quantidade é inválida, coloque uma quantidade menor ou igual ao total em estoque!";
+            return false;
+        }
+
+        return true;
+    }
+
+    private void CalcularQuantidadeEstoque()
+    {
+        if (selectedProduto != null)
+        {
+            QuantidadeEstoque = selectedProduto.QuantidadeEstoque ?? 0;
+
+            foreach (var produto in listProdutos)
+            {
+                if (selectedProduto.CodProduto == produto.CodProduto)
+                {
+                    QuantidadeEstoque -= produto.QtdeItens;
+                }
+            }
+        }
+        else
+        {
+            QuantidadeEstoque = 0;
+        }
+    }
+
+}

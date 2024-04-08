@@ -1,0 +1,47 @@
+﻿@inject NavigationManager Navigation
+
+<style>
+
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        padding: 0px;
+    }
+    
+</style>
+
+<MudGrid Style="max-width: 600px; padding-bottom: 32px;" Class="paper-style">
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText Style="font-weight: 700; text-transform: uppercase;color:#fff;">Deseja realmente cancelar esta cotação?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnNao" Variant="Variant.Filled" Color="Color.Error">
+            Não
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnSim" Variant="Variant.Filled" Color="Color.Success">
+            Sim
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private void BtnSim()
+    {
+        Navigation.NavigateTo("/index");
+    }
+
+    private void BtnNao()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}

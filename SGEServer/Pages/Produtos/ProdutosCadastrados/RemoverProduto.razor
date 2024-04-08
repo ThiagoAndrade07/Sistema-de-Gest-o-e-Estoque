@@ -1,0 +1,65 @@
+﻿@inject ProdutosController _Produtos
+
+<style>
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        padding: 0px;
+    }
+</style>
+
+<MudGrid Style="padding: 30px;" Class="paper-style">
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText  Style="font-weight: 700;color:#fff;">Deseja realmente excluir o produto "@(Produto)" permanentemente?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Color="Color.Error">
+            Cancelar
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnConfirmar" Variant="Variant.Filled" Color="Color.Success">
+            Confirmar
+        </MudButton>
+    </MudItem>
+    <MudItem xs="12" Class="d-flex justify-center align-center">
+        <MudText Color="Color.Error">@Mensagem</MudText>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public int CodProduto { get; set; }
+    [Parameter]
+    public string? Produto { get; set; }
+
+    private string Categoria = string.Empty;
+    private string Mensagem = string.Empty;
+
+    private void BtnConfirmar()
+    {
+        if (CodProduto > 0)
+        {
+            var resp = _Produtos.RemoverProduto(CodProduto);
+            string mensagem = resp.Split("|")[0];
+
+
+            MudDialog!.Close(DialogResult.Ok(mensagem));
+        }
+        else
+        {
+            Mensagem = "ERRO! Produto inválido, tente novamente";
+        }
+    }
+
+    private void BtnCancelar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+}

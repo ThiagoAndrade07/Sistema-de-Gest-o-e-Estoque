@@ -1,0 +1,59 @@
+﻿
+<style>
+    /* cor do texto digitado no mudtext */
+    .mud-input > input.mud-input-root {
+        color: #fff !important;
+    }
+    /* cor do label do mudtext */
+    .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+        color: #fff !important;
+    }
+
+    .mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+        background-color: #063862;
+    }
+
+    .mud-dialog .mud-dialog-title {
+        padding: 0px;
+    }
+
+    .paper-style {
+        background-color: #011E36;
+        border-radius: 10px;
+        padding: 10px;
+    }
+</style>
+
+<MudGrid Style="max-width: 600px; padding-bottom: 32px;" Class="paper-style">
+    <MudItem Class="d-flex justify-center align-center" xs="12">
+        <MudText Style="font-weight: 700; text-transform: uppercase;color:#fff;">Deseja realmente cancelar a edição desta cotação @NumCotacao ?</MudText>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnCancelar" Variant="Variant.Filled" Color="Color.Error">
+            Não
+        </MudButton>
+    </MudItem>
+    <MudItem Class="d-flex justify-center align-center" xs="6">
+        <MudButton OnClick="BtnConfirmar" Variant="Variant.Filled" Color="Color.Success">
+            Sim
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public string NumCotacao { get; set; }
+
+    private void BtnCancelar()
+    {
+        MudDialog!.Close(DialogResult.Cancel());
+    }
+
+    private void BtnConfirmar()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}
