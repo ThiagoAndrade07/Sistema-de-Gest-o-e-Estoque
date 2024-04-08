@@ -1,0 +1,74 @@
+﻿@inject NavigationManager Navigation
+@inject AuthenticationLogin authStateProvider
+
+<CascadingAuthenticationState>
+    
+        <CascadingAuthenticationState>
+            <Router AppAssembly="@typeof(Program).Assembly">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(NoLayout)" >
+                        <Authorizing>
+                            <div class="h-100 d-flex justify-content-center">
+                                <div style="margin-top: 4rem;">
+                                    <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+                                </div>
+                            </div>
+                        </Authorizing>
+                        <NotAuthorized  >
+                            <div class="h-100 w-100 d-flex justify-center">
+                                @if (state == LoadingContainerState.Loading)
+                                {
+                                    <div style="margin-top: 4rem;">
+                                        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" 
+                                        Indeterminate="true" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="width: 230px; margin-top: 4rem;">
+                                        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-2">Sesão expirou!</MudText>
+                                        <MudText Typo="Typo.body2" Align="Align.Center">Faça login novamente para continuar: </MudText>
+                                        <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Class="w-100 mt-1"
+                                               OnClick="Sair"
+                                               EndIcon="@Icons.Material.Filled.ExitToApp">Sair</MudButton>
+                                    </div>
+                                }
+                            </div>
+                        </NotAuthorized>
+                    </AuthorizeRouteView>
+                </Found>
+                <NotFound>
+                    <LayoutView>
+                        <ErroAcesso></ErroAcesso>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingAuthenticationState>
+     
+</CascadingAuthenticationState>
+@code {
+    [Parameter]
+    public ConnectionInfo? connectionInfo { get; set; }
+
+    private enum LoadingContainerState { Loaded, Loading }
+    LoadingContainerState state = LoadingContainerState.Loading;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            state = LoadingContainerState.Loaded;
+            StateHasChanged();
+        }
+    }
+
+    protected async void Sair()
+    {
+        await authStateProvider.Logout();
+        Navigation.NavigateTo("/");
+    }
+
+}
